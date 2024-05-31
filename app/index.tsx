@@ -5,7 +5,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text>Hello World !</Text>
-      <Link href="/profile" style={styles.links}>Go to Profile</Link>
+      <Link href="/home" style={styles.links}>Go to Home</Link>
     </View>
   );
 }

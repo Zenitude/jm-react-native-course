@@ -1,10 +1,10 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-export default function profile() {
+export default function Search() {
   return (
     <View>
-      <Text>Page Profile</Text>
+      <Text>Search</Text>
     </View>
   )
 }
