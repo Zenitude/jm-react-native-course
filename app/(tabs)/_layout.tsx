@@ -1,12 +1,12 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 import React from "react";
-import { Tabs, Redirect } from "expo-router";
+import { Tabs } from "expo-router";
 import { icons } from "../../constants";
 
 const TabIcon = ({icon, color, name, focused}: TabIconType) => {
   return (
     <View style={styles.tabView}>
-      <Image 
+      <Image
         style={styles.tabIcons}
         source={icon}
         resizeMode="contain"
@@ -38,7 +38,7 @@ export default function TabsLayout() {
           options={{
             title: 'Home',
             headerShown: false,
-            tabBarIcon: ({ focused, color }: {focused: boolean, color: string }) => {
+            tabBarIcon: ({ focused, color }: IconType) => {
               return <TabIcon
                 icon={icons.home}
                 color={color}

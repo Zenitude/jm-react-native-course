@@ -12,7 +12,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "global.d.ts"
+    "types/expo-env.d.ts",
+    "types/global.d.ts",
+    "types/icons.d.ts",
+    "expo-env.d.ts"
   ]
 }

@@ -1,4 +1,7 @@
-# Welcome to your Expo app 👋
+# JavaScript Mastery - React Native - Aora
+* application from the youtube video : [React Native Course for Beginners in 2024 | Build a Full Stack React Native App](https://www.youtube.com/watch?v=ZBCUegTZF7M)
+
+## Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
