@@ -6,5 +6,6 @@ type ButtonPropsIndex = {
     styles: {
         container: {}
         text: {}
-    }
+    },
+    loading: boolean;
 }

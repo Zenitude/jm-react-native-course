@@ -22,7 +22,10 @@ export default {
     100: "#CDCDE0"
   },
   red: {
-    500: "#5D0A0B",
+    default: "#FF0000"
+  },
+  blue: {
+    default: "#0000FF"
   },
   white: "#fff",
   activeTab: "#FFA001",

@@ -1,6 +1,8 @@
 type FormType = {
+    username?: string;
     email: string;
     password: string;
+    confirm?: string;
 }
   
 type FormFieldType = {
@@ -8,8 +10,5 @@ type FormFieldType = {
     value: string;
     placeholder : string;
     keyboard: KeyboardTypeOptions;
-    setter: [
-        FormType,
-        React.Dispatch<React.SetStateAction<FormType>>
-    ]
+    setter: React.Dispatch<React.SetStateAction<FormType>>
 }
