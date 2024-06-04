@@ -1,7 +1,7 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
-import { icons } from "../../constants";
+import { icons, colors } from "../../constants";
 
 const TabIcon = ({icon, color, name, focused}: TabIconType) => {
   return (
@@ -23,12 +23,12 @@ export default function TabsLayout() {
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,
-          tabBarActiveTintColor: '#FFA001',
-          tabBarInactiveTintColor: '#CDCDE0',
+          tabBarActiveTintColor: colors.activeTab,
+          tabBarInactiveTintColor: colors.grey[100],
           tabBarStyle: {
-            backgroundColor: '#161622',
+            backgroundColor: colors.primary,
             borderTopWidth: 1,
-            borderTopColor: '#232533',
+            borderTopColor: colors.black[200],
             height: 84
           }
         }}
@@ -36,7 +36,7 @@ export default function TabsLayout() {
         <Tabs.Screen 
           name="home"
           options={{
-            title: 'Home',
+            title: "Home",
             headerShown: false,
             tabBarIcon: ({ focused, color }: IconType) => {
               return <TabIcon
@@ -51,7 +51,7 @@ export default function TabsLayout() {
         <Tabs.Screen 
           name="bookmark"
           options={{
-            title: 'Bookmark',
+            title: "Bookmark",
             headerShown: false,
             tabBarIcon: ({ focused, color }: {focused: boolean, color: string }) => {
               return <TabIcon
@@ -66,7 +66,7 @@ export default function TabsLayout() {
         <Tabs.Screen 
           name="create"
           options={{
-            title: 'Create',
+            title: "Create",
             headerShown: false,
             tabBarIcon: ({ focused, color }: {focused: boolean, color: string }) => {
               return <TabIcon
@@ -81,7 +81,7 @@ export default function TabsLayout() {
         <Tabs.Screen 
           name="profile"
           options={{
-            title: 'Profile',
+            title: "Profile",
             headerShown: false,
             tabBarIcon: ({ focused, color }: {focused: boolean, color: string }) => {
               return <TabIcon
@@ -100,9 +100,9 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   tabView: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     gap: 5
   },
   tabIcons: {
@@ -110,12 +110,12 @@ const styles = StyleSheet.create({
     height: 20,
   },
   tabTextUnfocus: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 10
   },
   tabTextFocused: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 15
   }
 

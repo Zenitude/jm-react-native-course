@@ -21,7 +21,12 @@ export default {
   grey: {
     100: "#CDCDE0"
   },
+  red: {
+    500: "#5D0A0B",
+  },
   white: "#fff",
+  activeTab: "#FFA001",
+  placeholder: "#7B7B8B",
   light: {
     text: '#11181C',
     background: '#fff',
