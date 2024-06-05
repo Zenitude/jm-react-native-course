@@ -1,8 +1,9 @@
-import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
-import React, { useState } from "react";
+import { View, Text, Image, StyleSheet, ScrollView, GestureResponderEvent, Alert } from "react-native";
+import React, { ErrorInfo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router"
+import { Link, router } from "expo-router"
 import { colors, images } from "../../constants";
+import { createUser } from "../../lib/appwrite";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 
@@ -10,7 +11,23 @@ export default function Signup() {
   const [form, setForm] = useState<FormType>({ username: "", email: "", password: "", confirm: "" })
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const submit = () => {}
+  const submit = async (e: GestureResponderEvent) => {
+    if(!form.username || !form.email || !form.password || !form.confirm ) {
+      Alert.alert('Error', 'Please fill in all the fields')
+    }
+    setIsSubmitting(true);
+
+    try {
+      if(form.password === form.confirm) {
+        const result = await createUser(form.email, form.password, form.username!);
+        router.replace('/home')
+      } else {
+        Alert.alert('Error', 'Password and Confirm are different')
+      }
+    }
+    catch(error: any) { Alert.alert('Error', error.message); } 
+    finally { setIsSubmitting(false); }
+  }
 
   return (
     <SafeAreaView style={styles.area}>

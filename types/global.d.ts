@@ -7,5 +7,5 @@ type ButtonPropsIndex = {
         container: {}
         text: {}
     },
-    loading: boolean;
+    loading?: boolean;
 }

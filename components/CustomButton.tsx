@@ -1,7 +1,7 @@
 import { TouchableOpacity, Text } from 'react-native'
 import React from 'react'
 
-export default function CustomButton({title, handlePress, styles, loading}: ButtonPropsIndex) {
+export default function CustomButton({title, handlePress, styles}: ButtonPropsIndex) {
     return (
     <TouchableOpacity
         onPress={handlePress}

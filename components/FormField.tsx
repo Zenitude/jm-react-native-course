@@ -5,28 +5,31 @@ import { colors, icons } from "../constants";
 export default function FormField({title, value, placeholder, keyboard, setter }: FormFieldType) {
   const [showPassword, setShowPassword] = useState(false);
 
+  const changeText = (text: string) => setter((prev: FormType) => {
+    const previous = {...prev};
+    if(title === "Email") { previous.email = text}
+    else if(title === "Username") { previous.username = text}
+    else if(title === "Password") { previous.password = text}
+    else if(title === "Confirm") { previous.confirm = text}
+    return previous;
+  })
+
   return (
     <View style={styles.container}>
       <Text style={styles.textField}>{title}</Text>
 
       <View style={styles.field}>
-        <TextInput 
+        <TextInput       
+            autoCapitalize="none"
             style={styles.textField}
             value={value}
             placeholder={placeholder}
             placeholderTextColor={colors.placeholder}
             keyboardType={keyboard}
-            onChangeText={(text: string) => setter((prev: FormType) => {
-              const previous = {...prev};
-              if(title === "Email") { previous.email = text}
-              else if(title === "Username") { previous.username = text}
-              else if(title === "Password") { previous.password = text}
-              else if(title === "Confirm") { previous.confirm = text}
-              return previous;
-            })}
-            secureTextEntry={title === "Password" && !showPassword}
+            onChangeText={changeText}
+            secureTextEntry={(title === "Password" || title === "Confirm") && !showPassword}
         ></TextInput>
-        {title === 'Password' && (
+        {(title === "Password" || title === "Confirm") && (
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
             >

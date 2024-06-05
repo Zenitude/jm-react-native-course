@@ -1,8 +1,9 @@
-import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
+import { View, Text, Image, StyleSheet, ScrollView, GestureResponderEvent, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router"
+import { Link, router } from "expo-router"
 import { colors, images } from "../../constants";
+import { signIn } from "../../lib/appwrite";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 
@@ -10,7 +11,19 @@ export default function Signin() {
   const [form, setForm] = useState<FormType>({ email: "", password: "" })
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const submit = () => {}
+  const submit = async (e: GestureResponderEvent) => {
+    if(!form.email || !form.password ) {
+      Alert.alert('Error', 'Please fill in all the fields')
+    }
+    setIsSubmitting(true);
+
+    try {
+        await signIn(form.email, form.password);
+        router.replace('/home');
+    }
+    catch(error: any) { Alert.alert('Error', error.message); } 
+    finally { setIsSubmitting(false); }
+  }
 
   return (
     <SafeAreaView style={styles.area}>
@@ -29,8 +42,8 @@ export default function Signin() {
             title={"Email"} 
             value={form.email} 
             placeholder=""
-            keyboard="email-address" 
-            setter={setForm}
+            keyboard="email-address"
+            setter={setForm}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
           />
 
           <FormField 
