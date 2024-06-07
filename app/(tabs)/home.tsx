@@ -1,19 +1,134 @@
-import { View, Text, StyleSheet } from "react-native";
-import React from "react";
+import { View, Text, Image, StyleSheet, FlatList, RefreshControl, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { colors, images } from "../../constants";
+import SearchInput from "../../components/SearchInput";
+import Trending from "../../components/Trending";
+import VideoCard from "../../components/VideoCard";
+import EmptyState from "../../components/EmptyState";
+import { getAllPosts } from "../../lib/appwrite";
+import { useAppwrite } from "../../hooks/useAppwrite";
 
 export default function Home() {
+  const [refreshing, setRefreshing] = useState(false);
+  const [search, setSearch] = useState("");
+  const { data: listPost, refetch } = useAppwrite(getAllPosts);
+  
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Home</Text>
-    </View>
+    <SafeAreaView style={styles.area}>
+      <FlatList 
+        style={styles.list}
+        data={listPost}
+        keyExtractor={(item) => item.$id}
+        renderItem={({item}) => (
+          <VideoCard 
+            video={item}
+          />
+        )}
+        ListHeaderComponent={() => (
+          <View style={styles.container}>
+            <View style={styles.viewInContainer}>
+              <View>
+                <Text style={styles.textFirst}>Welcome Back</Text>
+                <Text style={styles.textSecond}>Zen</Text>
+              </View>
+
+              <View style={styles.viewImage}>
+                <Image 
+                  source={images.logoSmall}
+                  resizeMode="contain"
+                  style={styles.logo}
+                />
+              </View>
+            </View>
+
+            <SearchInput 
+              value={search}
+              placeholder="Search for a video topic"
+              keyboard={"default"}
+              setter={setSearch}
+            />
+
+            <View style={styles.viewSubtitle}>
+              <Text style={styles.subtitle}>Latest Videos</Text>
+              <Trending 
+                posts={listPost ?? []}
+              />
+            </View>
+          </View>
+        )}
+        ListEmptyComponent={() => (
+          <EmptyState 
+            title={"No Videos Found"}
+            subtitle={"Be the first one to upload video"}
+          />
+        )}
+        refreshControl={<RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+
+        />}
+      />
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
+  area: {
+    backgroundColor: colors.primary,
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 25,
+    paddingHorizontal: 10
+  },
+  list: {
+    width: '100%',
+  },
+  text: {
+    color: colors.white
+  },
   container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff"
+    marginVertical: 6,
+    paddingHorizontal: 4,
+    gap: 6
+  },
+  viewInContainer: {
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    marginBottom: 6
+  },
+  textFirst: {
+    color: colors.grey[100],
+    fontSize: 16,
+  },
+  textSecond: {
+    color: colors.white,
+    fontSize: 28,
+    fontWeight: 'bold'
+  },
+  viewImage: {
+    marginTop: 10,
+  },
+  logo: {
+    width: 40,
+    height: 40
+  },
+  viewSubtitle: {
+    width: '100%',
+    paddingTop: 35,
+    paddingBottom: 18
+  }, 
+  subtitle: {
+    color: colors.grey[100],
+    fontSize: 18,
+    marginBottom: 15
   }
 })

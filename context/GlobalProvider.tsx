@@ -1,9 +1,8 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 import { Models } from "react-native-appwrite";
 import { getCurrentUser } from "../lib/appwrite";
 
-const GlobalContext = createContext<ContextType | null>(null);
-export const useGlobalContext = () => useContext(GlobalContext);
+export const Context = createContext<ContextType | null>(null);
 
 export default function GlobalProdiver({children}: ProviderProps) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,8 +28,8 @@ export default function GlobalProdiver({children}: ProviderProps) {
     }, [])
 
     return (
-        <GlobalContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser, isLoading }}>
+        <Context.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser, isLoading }}>
             {children}
-        </GlobalContext.Provider>
+        </Context.Provider>
     )
 }

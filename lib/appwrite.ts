@@ -10,17 +10,29 @@ export const appwriteConfig = {
     storageId: '66608f7900002b723fbe'
 }
 
+const { endpoint, platform, projectId, databaseId, userCollectionId, videoCollectionId, storageId } = appwriteConfig;
+
 const client = new Client();
 
 client
-    .setEndpoint(appwriteConfig.endpoint)
-    .setProject(appwriteConfig.projectId)
-    .setPlatform(appwriteConfig.platform)
+    .setEndpoint(endpoint)
+    .setProject(projectId)
+    .setPlatform(platform)
 ;
 
 const account = new Account(client);
 const avatars = new Avatars(client);
 const databases = new Databases(client);
+
+export async function signIn(email: string, password: string) {
+    try {
+        const session = await account.createEmailPasswordSession(email, password);
+        return session;
+    } catch(error: any) {
+        console.log(error);
+        throw new Error(error.message);
+    }
+}
 
 export const createUser = async (email: string, password: string, username: string) => {
     try {
@@ -31,8 +43,8 @@ export const createUser = async (email: string, password: string, username: stri
         await signIn(email, password);
         
         const newUser = await databases.createDocument(
-            appwriteConfig.databaseId,
-            appwriteConfig.userCollectionId,
+            databaseId,
+            userCollectionId,
             ID.unique(),
             {
                 accountId: newAccount.$id,
@@ -51,24 +63,14 @@ export const createUser = async (email: string, password: string, username: stri
     }
 }
 
-export async function signIn(email: string, password: string) {
-    try {
-        const session = await account.createEmailPasswordSession(email, password);
-        return session;
-    } catch(error: any) {
-        console.log(error);
-        throw new Error(error.message);
-    }
-}
-
 export async function getCurrentUser() {
     try {
         const currentAccount = await account.get();
 
         if(!currentAccount) throw Error;
         const currentUser = await databases.listDocuments(
-            appwriteConfig.databaseId,
-            appwriteConfig.userCollectionId,
+            databaseId,
+            userCollectionId,
             [Query.equal('accountId', currentAccount.$id)]
         )
 
@@ -80,6 +82,20 @@ export async function getCurrentUser() {
     catch(error: any) {
         console.log(error);
         throw new Error(error);
+    }
+}
+
+export async function getAllPosts() {
+    try{
+        const posts = await databases.listDocuments(
+            databaseId,
+            videoCollectionId
+        )
+
+        return posts.documents;
+    }
+    catch(error) {
+        throw new Error(`${error}`);
     }
 }
 

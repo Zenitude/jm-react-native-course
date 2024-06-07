@@ -2,7 +2,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from "reac
 import React, { useState} from "react";
 import { colors, icons } from "../constants";
 
-export default function FormField({title, value, placeholder, keyboard, setter }: FormFieldType) {
+export default function FormField({title, value, placeholder, keyboard, setter }: FormFieldProps) {
   const [showPassword, setShowPassword] = useState(false);
 
   const changeText = (text: string) => setter((prev: FormType) => {

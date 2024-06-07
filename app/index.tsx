@@ -4,11 +4,11 @@ import { images, colors } from "../constants";
 import CustomButton from "../components/CustomButton";
 import { StatusBar } from "expo-status-bar";
 import { Redirect, router } from "expo-router";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useContext } from "react";
+import { Context } from "../context/GlobalProvider";
 
 export default function Index() {
-  const {isLoading, isLoggedIn} = useGlobalContext()!;
-  console.log(isLoading, isLoggedIn)
+  const {isLoading, isLoggedIn} = useContext(Context)!;
   if(!isLoading && isLoggedIn) return <Redirect href="/home" />
   return (
     <SafeAreaView style={styles.container}>

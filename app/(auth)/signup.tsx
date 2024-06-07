@@ -1,5 +1,5 @@
 import { View, Text, Image, StyleSheet, ScrollView, GestureResponderEvent, Alert } from "react-native";
-import React, { ErrorInfo, useState } from "react";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router"
 import { colors, images } from "../../constants";
@@ -53,7 +53,7 @@ export default function Signup() {
           <FormField 
             title={"Email"} 
             value={form.email} 
-            placeholder=""
+            placeholder="example@mail.com"
             keyboard="email-address" 
             setter={setForm}
           />
