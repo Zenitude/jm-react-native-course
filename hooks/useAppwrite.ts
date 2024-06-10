@@ -1,4 +1,3 @@
-import { getAllPosts } from "@/lib/appwrite";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { Models } from "react-native-appwrite";

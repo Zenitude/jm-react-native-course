@@ -99,4 +99,17 @@ export async function getAllPosts() {
     }
 }
 
+export async function getLatestPosts() {
+    try{
+        const posts = await databases.listDocuments(
+            databaseId,
+            videoCollectionId,
+            [Query.orderDesc('$createdAt'), Query.limit(7)]
+        )
 
+        return posts.documents;
+    }
+    catch(error) {
+        throw new Error(`${error}`);
+    }
+}
