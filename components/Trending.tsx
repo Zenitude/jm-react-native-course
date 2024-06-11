@@ -4,6 +4,7 @@ import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
 import * as Animatable from "react-native-animatable";
 import React, { useState, useEffect } from "react";
 import { colors, icons } from "../constants";
+import { WebView } from "react-native-webview";
 
 type TrendingItemProps = {
   activeItem: string | Models.Document,
@@ -14,6 +15,12 @@ const TrendingItem = ({activeItem, item}: TrendingItemProps) => {
   const [play, setPlay] = useState(false);
   const [styleImgBG, setStyleImgBg] = useState(styles.imageBg);
   
+  const changeStateYT = (state: string) => {
+    if(state === "ended") {
+      setPlay(false);
+    }
+  }
+
   useEffect(() => {
     const verifActive = (verif: boolean) => {
       if(verif) setStyleImgBg({...styleImgBG, transform: [{scale: 1.2}]})
@@ -24,7 +31,7 @@ const TrendingItem = ({activeItem, item}: TrendingItemProps) => {
     else verifActive(activeItem.$id === item.$id);
 
   }, [activeItem])
-
+  console.log(item)
   return(
     <Animatable.View
       style={styles.animatedItem}
@@ -43,7 +50,6 @@ const TrendingItem = ({activeItem, item}: TrendingItemProps) => {
                 setPlay(false)
               }
             }}
-
           />
         )
         : (
@@ -123,7 +129,9 @@ const styles = StyleSheet.create({
       shadowColor: colors.black.default,
       shadowOpacity: 15,
       shadowOffset: {width: 5, height: 5},
-      transform: [{scale: 0.9}]
+      transform: [{scale: 0.9}],
+      borderRadius: 15,
+      overflow: 'hidden'
     },
     play: {
       width: 50,
@@ -131,6 +139,7 @@ const styles = StyleSheet.create({
       position: 'absolute'
     },
     video: {
+      flex: 1,
       width: 194,
       height: 254,
       borderRadius: 15,
