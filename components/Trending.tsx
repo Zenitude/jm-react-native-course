@@ -14,12 +14,6 @@ type TrendingItemProps = {
 const TrendingItem = ({activeItem, item}: TrendingItemProps) => {
   const [play, setPlay] = useState(false);
   const [styleImgBG, setStyleImgBg] = useState(styles.imageBg);
-  
-  const changeStateYT = (state: string) => {
-    if(state === "ended") {
-      setPlay(false);
-    }
-  }
 
   useEffect(() => {
     const verifActive = (verif: boolean) => {
@@ -31,7 +25,7 @@ const TrendingItem = ({activeItem, item}: TrendingItemProps) => {
     else verifActive(activeItem.$id === item.$id);
 
   }, [activeItem])
-  console.log(item)
+
   return(
     <Animatable.View
       style={styles.animatedItem}
