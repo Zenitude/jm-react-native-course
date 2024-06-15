@@ -9,7 +9,7 @@ export const useAppwrite = (fn: any) => {
     const fetchData = async () => {
         setIsLoading(true);
 
-        try { setData(await fn()); }
+        try { setData(await fn); }
         catch(error: any) { Alert.alert('Error', `${error.message}`) } 
         finally { setIsLoading(false); }
     }

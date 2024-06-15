@@ -14,8 +14,6 @@ type FormFieldProps = {
 }
 
 type SearchInputProps = {
-    value: string;
-    placeholder : string;
-    keyboard: KeyboardTypeOptions;
-    setter: React.Dispatch<React.SetStateAction<string>>
+    initialQuery?: string;
+    refetch?: () => Promise<void>
 }

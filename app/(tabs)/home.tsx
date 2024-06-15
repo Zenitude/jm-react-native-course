@@ -12,8 +12,8 @@ import { useAppwrite } from "../../hooks/useAppwrite";
 export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
-  const { data: listPosts, refetch } = useAppwrite(getAllPosts);
-  const { data: latestPosts } = useAppwrite(getLatestPosts);
+  const { data: listPosts, refetch } = useAppwrite(getAllPosts());
+  const { data: latestPosts } = useAppwrite(getLatestPosts());
   
   const onRefresh = async () => {
     setRefreshing(true);
@@ -49,12 +49,7 @@ export default function Home() {
               </View>
             </View>
 
-            <SearchInput 
-              value={search}
-              placeholder="Search for a video topic"
-              keyboard={"default"}
-              setter={setSearch}
-            />
+            <SearchInput />
 
             <View style={styles.viewSubtitle}>
               <Text style={styles.subtitle}>Latest Videos</Text>
