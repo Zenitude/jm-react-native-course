@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import { Models } from "react-native-appwrite";
 import { getCurrentUser } from "../lib/appwrite";
 
@@ -20,7 +20,13 @@ export default function GlobalProdiver({children}: ProviderProps) {
                 setUser(null);
             }
         })
-        .catch((error) => console.log(error))
+        .catch((error) => {
+            if(error) {
+                //console.log('Error Get User : ', error)
+                setIsLoggedIn(false);
+                setUser(null);
+            }
+        })
         .finally(() => {
             setIsLoading(false);
         })

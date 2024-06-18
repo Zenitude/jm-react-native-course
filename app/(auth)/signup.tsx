@@ -1,31 +1,35 @@
 import { View, Text, Image, StyleSheet, ScrollView, GestureResponderEvent, Alert } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router"
 import { colors, images } from "../../constants";
 import { createUser } from "../../lib/appwrite";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
+import { Context } from "../../context/GlobalProvider";
 
 export default function Signup() {
+  const { setUser, setIsLoggedIn } = useContext(Context)!;
   const [form, setForm] = useState<FormType>({ username: "", email: "", password: "", confirm: "" })
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async (e: GestureResponderEvent) => {
     if(!form.username || !form.email || !form.password || !form.confirm ) {
-      Alert.alert('Error', 'Please fill in all the fields')
+      Alert.alert('Error Signup', 'Please fill in all the fields')
     }
     setIsSubmitting(true);
 
     try {
       if(form.password === form.confirm) {
         const result = await createUser(form.email, form.password, form.username!);
+        setUser(result)
+        setIsLoggedIn(true);
         router.replace('/home')
       } else {
-        Alert.alert('Error', 'Password and Confirm are different')
+        Alert.alert('Error Signup', 'Password and Confirm are different')
       }
     }
-    catch(error: any) { Alert.alert('Error', error.message); } 
+    catch(error: any) { Alert.alert('Error Signup', error.message); } 
     finally { setIsSubmitting(false); }
   }
 

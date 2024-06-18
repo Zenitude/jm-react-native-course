@@ -1,5 +1,5 @@
 import { View, Text, Image, StyleSheet, FlatList, RefreshControl } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, images } from "../../constants";
 import SearchInput from "../../components/SearchInput";
@@ -8,10 +8,11 @@ import VideoCard from "../../components/VideoCard";
 import EmptyState from "../../components/EmptyState";
 import { getAllPosts, getLatestPosts } from "../../lib/appwrite";
 import { useAppwrite } from "../../hooks/useAppwrite";
+import { Context } from "../../context/GlobalProvider";
 
 export default function Home() {
+  const { user } = useContext(Context)!;
   const [refreshing, setRefreshing] = useState(false);
-  const [search, setSearch] = useState("");
   const { data: listPosts, refetch } = useAppwrite(getAllPosts());
   const { data: latestPosts } = useAppwrite(getLatestPosts());
   
@@ -37,7 +38,7 @@ export default function Home() {
             <View style={styles.viewInContainer}>
               <View>
                 <Text style={styles.textFirst}>Welcome Back</Text>
-                <Text style={styles.textSecond}>Zen</Text>
+                <Text style={styles.textSecond}>{user?.username}</Text>
               </View>
 
               <View style={styles.viewImage}>

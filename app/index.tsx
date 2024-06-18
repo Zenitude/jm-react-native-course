@@ -4,7 +4,7 @@ import { images, colors } from "../constants";
 import CustomButton from "../components/CustomButton";
 import { StatusBar } from "expo-status-bar";
 import { Redirect, router } from "expo-router";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { Context } from "../context/GlobalProvider";
 
 export default function Index() {

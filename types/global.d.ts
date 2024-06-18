@@ -9,3 +9,8 @@ type ButtonPropsIndex = {
     },
     loading?: boolean;
 }
+
+type InfoBoxProps = {
+    title: string | number;
+    subtitle?: string;
+}

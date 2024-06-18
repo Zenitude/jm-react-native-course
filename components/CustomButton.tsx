@@ -1,5 +1,6 @@
-import { TouchableOpacity, Text } from 'react-native'
-import React from 'react'
+import React from "react";
+import { TouchableOpacity, Text } from "react-native";
+
 
 export default function CustomButton({title, handlePress, styles}: ButtonPropsIndex) {
     return (

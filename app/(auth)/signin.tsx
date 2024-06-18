@@ -1,27 +1,32 @@
 import { View, Text, Image, StyleSheet, ScrollView, GestureResponderEvent, Alert } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router"
 import { colors, images } from "../../constants";
-import { signIn } from "../../lib/appwrite";
+import { getCurrentUser, signIn } from "../../lib/appwrite";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
+import { Context } from "../../context/GlobalProvider";
 
 export default function Signin() {
+  const { setUser, setIsLoggedIn } = useContext(Context)!;
   const [form, setForm] = useState<FormType>({ email: "", password: "" })
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async (e: GestureResponderEvent) => {
     if(!form.email || !form.password ) {
-      Alert.alert('Error', 'Please fill in all the fields')
+      Alert.alert('Error Signin', 'Please fill in all the fields')
     }
     setIsSubmitting(true);
 
     try {
         await signIn(form.email, form.password);
+        const result = await getCurrentUser();
+        setUser(result)
+        setIsLoggedIn(true);
         router.replace('/home');
     }
-    catch(error: any) { Alert.alert('Error', error.message); } 
+    catch(error: any) { Alert.alert('Error Signin', error.message); } 
     finally { setIsSubmitting(false); }
   }
 

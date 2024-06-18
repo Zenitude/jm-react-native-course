@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import React from "react";
 import GlobalProdiver from "../context/GlobalProvider";
 
 export default function RootLayout() {
