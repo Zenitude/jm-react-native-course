@@ -5,12 +5,16 @@ import { colors, icons } from "../constants";
 export default function FormField({title, value, placeholder, keyboard, setter }: FormFieldProps) {
   const [showPassword, setShowPassword] = useState(false);
 
-  const changeText = (text: string) => setter((prev: FormType) => {
+  const changeText = (text: string) => setter((prev: FormFieldSetter) => {
     const previous = {...prev};
-    if(title === "Email") { previous.email = text}
-    else if(title === "Username") { previous.username = text}
-    else if(title === "Password") { previous.password = text}
-    else if(title === "Confirm") { previous.confirm = text}
+
+    if(title === "Email") { (previous as SignType).email = text}
+    else if(title === "Username") { (previous as SignType).username = text}
+    else if(title === "Password") { (previous as SignType).password = text}
+    else if(title === "Confirm") { (previous as SignType).confirm = text}
+    else if(title === "Video Title") { (previous as CreateVideoType).title = text}
+    else if(title === "AI prompt") { (previous as CreateVideoType).prompt = text}
+    
     return previous;
   })
 
@@ -47,7 +51,9 @@ export default function FormField({title, value, placeholder, keyboard, setter }
 
 const styles = StyleSheet.create({
     container: {
-        gap: 10
+        gap: 10,
+        marginTop: 10,
+        marginBottom: 20
     }, 
     text: {
         color: colors.grey[100]

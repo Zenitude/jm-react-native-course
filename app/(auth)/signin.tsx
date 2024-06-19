@@ -10,17 +10,17 @@ import { Context } from "../../context/GlobalProvider";
 
 export default function Signin() {
   const { setUser, setIsLoggedIn } = useContext(Context)!;
-  const [form, setForm] = useState<FormType>({ email: "", password: "" })
+  const [form, setForm] = useState<FormFieldSetter>({ email: "", password: "" })
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async (e: GestureResponderEvent) => {
-    if(!form.email || !form.password ) {
+    if(!(form as SignType).email || !(form as SignType).password ) {
       Alert.alert('Error Signin', 'Please fill in all the fields')
     }
     setIsSubmitting(true);
 
     try {
-        await signIn(form.email, form.password);
+        await signIn((form as SignType).email, (form as SignType).password);
         const result = await getCurrentUser();
         setUser(result)
         setIsLoggedIn(true);
@@ -45,7 +45,7 @@ export default function Signin() {
 
           <FormField 
             title={"Email"} 
-            value={form.email} 
+            value={(form as SignType).email} 
             placeholder=""
             keyboard="email-address"
             setter={setForm}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
@@ -53,7 +53,7 @@ export default function Signin() {
 
           <FormField 
             title={"Password"} 
-            value={form.password} 
+            value={(form as SignType).password} 
             placeholder=""
             keyboard="default" 
             setter={setForm}

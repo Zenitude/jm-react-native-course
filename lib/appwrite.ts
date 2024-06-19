@@ -1,5 +1,5 @@
-import { Client, Account, Avatars, Databases, ID, Query } from 'react-native-appwrite';
-
+import { Client, Account, Avatars, Databases, ID, Query, Storage, ImageGravity } from 'react-native-appwrite';
+import { DocumentPickerAsset } from "expo-document-picker";
 
 export const appwriteConfig = {
     endpoint: 'https://cloud.appwrite.io/v1',
@@ -24,7 +24,9 @@ client
 const account = new Account(client);
 const avatars = new Avatars(client);
 const databases = new Databases(client);
+const storage = new Storage(client);
 
+// SignIn, SignUp, SignOut
 export async function signIn(email: string, password: string) {
     try {
         const session = await account.createEmailPasswordSession(email, password);
@@ -57,11 +59,23 @@ export const createUser = async (email: string, password: string, username: stri
         return newUser;
     }
     catch(error: any) {
-        console.log('Error Create User : ', error);
+        //console.log('Error Create User : ', error);
         throw new Error(error);
     }
 }
 
+export async function signOut() {
+    try {
+        const session = await account.deleteSession("current")
+        return session;
+    }
+    catch(error) {
+        //console.log('Error Sign Out : ', error);
+        throw new Error(`${error}`)
+    }
+}
+
+// Get Current User
 export async function getCurrentUser() {
     try {
         const currentAccount = await account.get();
@@ -82,6 +96,7 @@ export async function getCurrentUser() {
     }
 }
 
+// Home
 export async function getAllPosts() {
     try{
         const posts = await databases.listDocuments(
@@ -131,6 +146,7 @@ export async function searchPosts(query: string) {
     }
 }
 
+// Profile
 export async function getUserPosts(userId: string) {
     try{
         if(userId) {
@@ -147,18 +163,79 @@ export async function getUserPosts(userId: string) {
         } else { return []}
     }
     catch(error) {
-        console.log('Error Get User Posts : ', error);
+        //console.log('Error Get User Posts : ', error);
         throw new Error(`${error}`);
     }
 }
 
-export async function signOut() {
+// Create
+export async function getFilePreview(fileId: string, type: string) {
+    let fileUrl;
+
     try {
-        const session = await account.deleteSession("current")
-        return session;
+        if(type === 'video') {
+            fileUrl = storage.getFileView(storageId, fileId)
+        } else if(type === 'image') {
+            fileUrl = storage.getFilePreview(storageId, fileId, 2000, 2000, ImageGravity.Top, 100);
+        } else {
+            throw new Error('Invalid file type')
+        }
+
+        if(!fileUrl) throw new Error;
+        return fileUrl;
     }
     catch(error) {
-        //console.log('Error Sign Out : ', error);
-        throw new Error(`${error}`)
+        throw new Error(`Error Get File Preview : ${error}`);
     }
 }
+
+export async function uploadFile(file: DocumentPickerAsset, type: string) {
+    if(!file) return;
+
+    const { type: mimeType, name, size, uri} = file as AssetType;
+    const asset = <AssetType>{ name: name, type: mimeType, size: size, uri: uri};
+
+    try{
+        const uploadedFile = await storage.createFile(
+            storageId,
+            ID.unique(),
+            asset
+        )
+
+        const fileUrl = await getFilePreview(uploadedFile.$id, type);
+    }
+    catch(error) {
+        throw new Error(`Error Upload File : ${error}`);
+    }
+}
+
+export async function createVideo(form: CreateVideoType) {
+    try{
+        const [thumbnailUrl, videoUrl] = await Promise.all([
+            uploadFile(form.thumbnail, 'image'),
+            uploadFile(form.video, 'video')
+        ]);
+
+        const newPost = await databases.createDocument(
+            databaseId,
+            videoCollectionId,
+            ID.unique(),
+            {
+                title: form.title,
+                thumbnail: thumbnailUrl,
+                video: videoUrl,
+                prompt: form.prompt,
+                creator: form.userId
+            }
+        )
+
+        return newPost;
+    }
+    catch(error) {
+        throw new Error(`Error create Video : ${error}`);
+    }
+}
+
+
+
+

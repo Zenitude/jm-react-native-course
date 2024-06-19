@@ -10,18 +10,18 @@ import { Context } from "../../context/GlobalProvider";
 
 export default function Signup() {
   const { setUser, setIsLoggedIn } = useContext(Context)!;
-  const [form, setForm] = useState<FormType>({ username: "", email: "", password: "", confirm: "" })
+  const [form, setForm] = useState<FormFieldSetter>({ username: "", email: "", password: "", confirm: "" })
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async (e: GestureResponderEvent) => {
-    if(!form.username || !form.email || !form.password || !form.confirm ) {
+    if(!(form as SignType).username || !(form as SignType).email || !(form as SignType).password || !(form as SignType).confirm ) {
       Alert.alert('Error Signup', 'Please fill in all the fields')
     }
     setIsSubmitting(true);
 
     try {
-      if(form.password === form.confirm) {
-        const result = await createUser(form.email, form.password, form.username!);
+      if((form as SignType).password === (form as SignType).confirm) {
+        const result = await createUser((form as SignType).email, (form as SignType).password, (form as SignType).username!);
         setUser(result)
         setIsLoggedIn(true);
         router.replace('/home')
@@ -48,7 +48,7 @@ export default function Signup() {
 
           <FormField 
             title={"Username"} 
-            value={form.username!} 
+            value={(form as SignType).username!} 
             placeholder=""
             keyboard="default"
             setter={setForm}
@@ -56,7 +56,7 @@ export default function Signup() {
 
           <FormField 
             title={"Email"} 
-            value={form.email} 
+            value={(form as SignType).email} 
             placeholder="example@mail.com"
             keyboard="email-address" 
             setter={setForm}
@@ -64,7 +64,7 @@ export default function Signup() {
 
           <FormField 
             title={"Password"} 
-            value={form.password} 
+            value={(form as SignType).password} 
             placeholder=""
             keyboard="default" 
             setter={setForm}
@@ -72,7 +72,7 @@ export default function Signup() {
 
           <FormField 
             title={"Confirm"} 
-            value={form.confirm!} 
+            value={(form as SignType).confirm!} 
             placeholder=""
             keyboard="default" 
             setter={setForm}
