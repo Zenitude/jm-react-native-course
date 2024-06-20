@@ -1,10 +1,9 @@
-import { Text, FlatList, StyleSheet, TouchableOpacity, ImageBackground, Image, ViewToken } from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, ImageBackground, Image, ViewToken } from "react-native";
 import { Models } from "react-native-appwrite";
 import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
 import * as Animatable from "react-native-animatable";
 import React, { useState, useEffect } from "react";
 import { colors, icons } from "../constants";
-import { WebView } from "react-native-webview";
 
 type TrendingItemProps = {
   activeItem: string | Models.Document,

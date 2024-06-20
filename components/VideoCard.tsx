@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { Models } from "react-native-appwrite";
 import { colors, icons } from "../constants";
+import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
 
 type VideoCardProps = {
     video: Models.Document
@@ -40,7 +41,18 @@ export default function VideoCard({video: {title, thumbnail, prompt, video, crea
             {
                 play 
                 ? (
-                   <Text style={styles.text}>Playing</Text> 
+                    <Video 
+                    source={{uri: video}}
+                    style={styles.video}
+                    resizeMode={ResizeMode.CONTAIN}
+                    useNativeControls={true}
+                    shouldPlay={true}
+                    onPlaybackStatusUpdate={(status: AVPlaybackStatus) => {
+                      if(status.isLoaded && status.didJustFinish) {
+                        setPlay(false)
+                      }
+                    }}
+                  />
                 ) 
                 : (
                     <TouchableOpacity 
@@ -140,5 +152,13 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         position: 'absolute'
+    },
+    video: {
+        flex: 1,
+        width: "100%",
+        height: 200,
+        borderRadius: 15,
+        marginTop: 10,
+        backgroundColor: colors.black[200]
     }
 })

@@ -6,9 +6,9 @@ import FormField from "../../components/FormField";
 import { Video, ResizeMode } from "expo-av";
 import { router } from "expo-router";
 import CustomButton from "../../components/CustomButton";
-import * as DocumentPicker from "expo-document-picker";
 import { Context } from "../../context/GlobalProvider";
 import { createVideo } from "../../lib/appwrite";
+import * as ImagePicker from "expo-image-picker";
 
 export default function Create() {
   const { user } = useContext(Context)!;
@@ -22,9 +22,11 @@ export default function Create() {
   });
 
   const openPicker = async (selectType: string) => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: selectType === 'image' ? ['image/png', 'image/jpg', 'image/gif', 'image/jpeg'] : ['video/mp4', 'video/avi', 'video/gif']
-    })
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: selectType === "image" ? ImagePicker.MediaTypeOptions.Images : ImagePicker.MediaTypeOptions.Videos,
+      aspect: [4,3],
+      quality: 1,
+    });
 
     if(!result.canceled) {
       const theform = form as CreateVideoType;
@@ -33,7 +35,6 @@ export default function Create() {
       }
 
       if(selectType === 'video') {
-        console.log(result.assets)
         setForm({...theform, video: result.assets[0]})
       }
     }
@@ -106,7 +107,7 @@ export default function Create() {
               ? (
                 <Image 
                   source={{uri:(form as CreateVideoType).thumbnail.uri}}
-                  resizeMode={ResizeMode.CONTAIN}
+                  resizeMode={ResizeMode.COVER}
                   style={styles.thumbnail}
                 />
               )

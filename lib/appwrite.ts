@@ -1,5 +1,5 @@
 import { Client, Account, Avatars, Databases, ID, Query, Storage, ImageGravity } from 'react-native-appwrite';
-import { DocumentPickerAsset } from "expo-document-picker";
+import { ImagePickerAsset } from "expo-image-picker";
 
 export const appwriteConfig = {
     endpoint: 'https://cloud.appwrite.io/v1',
@@ -189,11 +189,15 @@ export async function getFilePreview(fileId: string, type: string) {
     }
 }
 
-export async function uploadFile(file: DocumentPickerAsset, type: string) {
+export async function uploadFile(file: ImagePickerAsset, type: string) {
     if(!file) return;
 
-    const { type: mimeType, name, size, uri} = file as AssetType;
-    const asset = <AssetType>{ name: name, type: mimeType, size: size, uri: uri};
+    const asset = <AssetType>{
+        name: file.fileName, 
+        type: file.mimeType, 
+        size: file.fileSize, 
+        uri: file.uri
+    };
 
     try{
         const uploadedFile = await storage.createFile(
@@ -203,6 +207,7 @@ export async function uploadFile(file: DocumentPickerAsset, type: string) {
         )
 
         const fileUrl = await getFilePreview(uploadedFile.$id, type);
+        return fileUrl;
     }
     catch(error) {
         throw new Error(`Error Upload File : ${error}`);
