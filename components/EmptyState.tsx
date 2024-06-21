@@ -4,12 +4,7 @@ import { router } from "expo-router";
 import { colors, images } from "../constants";
 import CustomButton from "./CustomButton";
 
-type EmptyStateProps = {
-    title: string;
-    subtitle: string;
-}
-
-export default function EmptyState({title, subtitle}: EmptyStateProps) {
+export default function EmptyState({title, subtitle, button}: EmptyStateProps) {
     return (
         <View style={styles.container}>
         <Image 
@@ -21,11 +16,16 @@ export default function EmptyState({title, subtitle}: EmptyStateProps) {
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.subtitle}>{subtitle}</Text>
 
-        <CustomButton 
-            title={"Create Video"}
-            handlePress={() => router.push('/create')}
-            styles={styleButton}
-        />
+        { 
+            button 
+            ? (<CustomButton 
+                title={"Create Video"}
+                handlePress={() => router.push('/create')}
+            />)
+            : (<></>)
+    
+        }
+        
         </View>
     )
 }
@@ -51,21 +51,3 @@ const styles = StyleSheet.create({
         fontSize: 14
     }
 })
-
-const styleButton = {
-    container: {
-      marginTop: 20,
-      minWidth: 280,
-      maxWidth: 305,
-      minHeight: 62,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: colors.secondary.default,
-      borderRadius: 50
-    },
-    text: {
-      color: colors.primary,
-      fontWeight: 'bold',
-      fontSize: 20
-    }
-  }

@@ -101,7 +101,8 @@ export async function getAllPosts() {
     try{
         const posts = await databases.listDocuments(
             databaseId,
-            videoCollectionId
+            videoCollectionId,
+            [Query.orderDesc('$createdAt')]
         )
         
         return posts.documents;
@@ -154,7 +155,7 @@ export async function getUserPosts(userId: string) {
             const posts = await databases.listDocuments(
                 databaseId,
                 videoCollectionId,
-                [Query.equal('creator', userId)]
+                [Query.equal('creator', userId), Query.orderDesc('$createdAt')]
             )
             
             if(!posts) throw new Error("Something went wrong")
@@ -230,7 +231,8 @@ export async function createVideo(form: CreateVideoType) {
                 thumbnail: thumbnailUrl,
                 video: videoUrl,
                 prompt: form.prompt,
-                creator: form.userId
+                creator: form.userId,
+                bookmarks: form.marks
             }
         )
 
@@ -241,6 +243,54 @@ export async function createVideo(form: CreateVideoType) {
     }
 }
 
+// Bookmark
+export async function getMarks(userId: string) {
+
+    try {
+        const posts = await databases.listDocuments(
+            databaseId,
+            videoCollectionId,
+            [Query.contains('bookmarks', userId)]  
+        )
+
+        return posts.documents;
+    }
+    catch(error) {
+        throw new Error(`Error Get Favorite : ${error}`)
+    }
+}
+
+export async function getVideo(videoId: string) {
+    try {
+        const posts = await databases.listDocuments(
+            databaseId,
+            videoCollectionId,
+            [Query.equal('$id', videoId)]
+        )
+
+        return posts.documents[0];
+    }
+    catch(error) {
+        throw new Error(`Error Get Favorite : ${error}`)
+    }
+}
+
+// Favorites
+export async function updateVideo(videoId: string, datas: VideoType) {
+    try {
+        const updatedVideo = await databases.updateDocument(
+            databaseId,
+            videoCollectionId,
+            videoId,
+            datas
+        )
+
+        return  updatedVideo;
+    }
+    catch(error) {
+        throw new Error(`Error Get Favorite : ${error}`)
+    }
+}
 
 
 

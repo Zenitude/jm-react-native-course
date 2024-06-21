@@ -18,7 +18,8 @@ export default function Create() {
     video: null,
     thumbnail: null,
     prompt: "",
-    userId: user.$id 
+    userId: user.$id,
+    marks: []
   });
 
   const openPicker = async (selectType: string) => {
@@ -55,7 +56,7 @@ export default function Create() {
     }
     catch(error: any) { Alert.alert('Error Create Video', error.message); } 
     finally { 
-      setForm({ title: "", video: null, thumbnail: null, prompt: "", userId: user.$id }); 
+      setForm({ title: "", video: null, thumbnail: null, prompt: "", userId: user.$id, marks: [] }); 
       setUploading(false);
     }
   }
@@ -136,7 +137,6 @@ export default function Create() {
         <CustomButton 
           title={"Submit & Publish"}
           handlePress={submit}
-          styles={styleButton}
           loading={uploading}
         />
       </ScrollView>
@@ -237,21 +237,3 @@ const styles = StyleSheet.create({
     color: colors.grey[100]
   }
 })
-
-const styleButton = {
-  container: {
-    marginTop: 20,
-    width: "100%",
-    minHeight: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.secondary.default,
-    borderRadius: 15,
-    marginHorizontal: "auto"
-  },
-  text: {
-    color: colors.primary,
-    fontWeight: 'bold',
-    fontSize: 20
-  }
-}

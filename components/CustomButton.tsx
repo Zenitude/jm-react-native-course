@@ -1,8 +1,8 @@
 import React from "react";
-import { TouchableOpacity, Text } from "react-native";
+import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { colors } from "../constants";
 
-
-export default function CustomButton({title, handlePress, styles}: ButtonPropsIndex) {
+export default function CustomButton({title, handlePress}: ButtonPropsIndex) {
     return (
     <TouchableOpacity
         onPress={handlePress}
@@ -13,3 +13,21 @@ export default function CustomButton({title, handlePress, styles}: ButtonPropsIn
     </TouchableOpacity>
   )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        marginTop: 20,
+        width: "100%",
+        minHeight: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: colors.secondary.default,
+        borderRadius: 15,
+        marginHorizontal: "auto"
+      },
+      text: {
+        color: colors.primary,
+        fontWeight: 'bold',
+        fontSize: 20
+      }
+})

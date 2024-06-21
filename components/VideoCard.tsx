@@ -1,16 +1,41 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
-import { Models } from "react-native-appwrite";
+import { StyleSheet, Text, View, Image, TouchableOpacity, Alert } from "react-native";
+import React, { useContext, useState } from "react";
 import { colors, icons } from "../constants";
 import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
+import { Context } from "../context/GlobalProvider";
+import { updateVideo } from "../lib/appwrite";
 
-type VideoCardProps = {
-    video: Models.Document
-}
-
-export default function VideoCard({video: {title, thumbnail, prompt, video, creator: { username, avatar}}}: VideoCardProps) {
+export default function VideoCard({video: { $id: videoId, title, thumbnail, prompt, video, creator: {  $id: userId, username, avatar }, bookmarks }}: VideoCardProps) {
+    const { user } = useContext(Context)!;
     const [play, setPlay] = useState(false);
-    
+    const [displayMenu, setDisplayMenu] = useState(false);
+    const [marks, setMarks] = useState(bookmarks ?? []);
+
+    const modifyMarks = () => {
+
+        setMarks((prev : string[]) => {
+            let previous = [...prev];
+            if(previous.length === 0 || !previous.includes(user.$id)) {
+                previous.push(user.$id);
+            } else if(previous.includes(user.$id)) {
+                const filteredMarks = previous.filter(el => el !== user.$id);
+                previous = filteredMarks;
+            }
+            return previous;
+        })
+
+        const updatedVideo = {
+            title: title,
+            thumbnail: thumbnail,
+            prompt: prompt,
+            creator: userId,
+            video: video,
+            bookmarks: marks
+        }
+        
+        updateVideo(videoId, updatedVideo);
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -29,13 +54,32 @@ export default function VideoCard({video: {title, thumbnail, prompt, video, crea
                     </View>
                 </View>
 
-                <View style={styles.menu}>
-                    <Image 
-                        source={icons.menu}
-                        resizeMode="contain"
-                        style={styles.iconMenu}
-                    />
+                <View style={styles.iconMenuContainer}>
+                    <TouchableOpacity onPress={() => setDisplayMenu(!displayMenu)}>
+                        <Image 
+                            source={icons.menu}
+                            resizeMode="contain"
+                            style={styles.iconMenu}
+                        />
+                    </TouchableOpacity>
                 </View>
+
+                {
+                    displayMenu ? (
+                        <View style={styles.menu}>
+                            <TouchableOpacity onPress={modifyMarks} style={styles.touch}>
+                                <Image 
+                                    source={marks.includes(userId) ? icons.mark : icons.unmark}
+                                    resizeMode="contain"
+                                    style={styles.iconMark}
+                                />
+                                <Text style={styles.textMenu}>Favoris</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : (<></>)
+                }
+
+                
             </View>
 
             {
@@ -83,14 +127,16 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         paddingLeft: 10,
-        paddingRight: 5,
-        marginBottom: 10
+        paddingRight: 10,
+        marginBottom: 10,
+        width: "99%"
     }, 
     header: {
         flexDirection: 'row',
         alignItems: 'flex-start',
         gap: 2,
-        marginTop: 20
+        marginTop: 20,
+        position: 'relative',
     }, 
     subHeader: {
         justifyContent: 'center',
@@ -127,12 +173,29 @@ const styles = StyleSheet.create({
         color: colors.grey[100],
         fontSize: 12
     },
-    menu: {
-        paddingTop: 5,
+    iconMenuContainer: {
+        paddingTop: 5
     },
     iconMenu: {
         width: 15,
         height: 15
+    },
+    menu: {
+        position: 'absolute',
+        width: 150,
+        minHeight: 75,
+        top: 15,
+        right: 15,
+        zIndex: 10,
+        borderWidth: 1,
+        borderColor: colors.grey[100],
+        backgroundColor: colors.primary,
+        paddingTop: 15,
+        paddingLeft: 15,
+        borderRadius: 15
+    },
+    textMenu: {
+        color: colors.white
     },
     containerThumb: {
         width: "100%",
@@ -160,5 +223,14 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginTop: 10,
         backgroundColor: colors.black[200]
+    },
+    touch: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+    },
+    iconMark: {
+        width: 25,
+        height: 25
     }
 })
