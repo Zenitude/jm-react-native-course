@@ -11,7 +11,8 @@ type CreateVideoType = {
     thumbnail: ImageSourcePropType | null,
     prompt: string;
     userId: string;
-    marks: string[]
+    marks: string[];
+    addLikes: string[];
 }
 
 type FormFieldSetter = SignType | CreateVideoType;
@@ -34,13 +35,4 @@ type AssetType = {
     type: string; 
     size: number; 
     uri: string;
-}
-
-type VideoType = {
-    title: string;
-    thumbnail: ImageSourcePropType;
-    prompt: string;
-    video: AVPlaybackSource;
-    creator: string;
-    bookmarks: string[];
 }

@@ -19,7 +19,8 @@ export default function Create() {
     thumbnail: null,
     prompt: "",
     userId: user.$id,
-    marks: []
+    marks: [],
+    addLikes: [],
   });
 
   const openPicker = async (selectType: string) => {
@@ -56,7 +57,7 @@ export default function Create() {
     }
     catch(error: any) { Alert.alert('Error Create Video', error.message); } 
     finally { 
-      setForm({ title: "", video: null, thumbnail: null, prompt: "", userId: user.$id, marks: [] }); 
+      setForm({ title: "", video: null, thumbnail: null, prompt: "", userId: user.$id, marks: [], addLikes: [] }); 
       setUploading(false);
     }
   }

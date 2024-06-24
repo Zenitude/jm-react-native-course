@@ -31,6 +31,7 @@ export default function Home() {
         renderItem={({item}) => (
           <VideoCard 
             video={item}
+            page={"home"}
           />
         )}
         ListHeaderComponent={() => (

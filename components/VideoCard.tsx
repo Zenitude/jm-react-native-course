@@ -3,37 +3,54 @@ import React, { useContext, useState } from "react";
 import { colors, icons } from "../constants";
 import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
 import { Context } from "../context/GlobalProvider";
-import { updateVideo } from "../lib/appwrite";
+import { updateVideo, deleteVideo } from "../lib/appwrite";
+import { router } from "expo-router";
 
-export default function VideoCard({video: { $id: videoId, title, thumbnail, prompt, video, creator: {  $id: userId, username, avatar }, bookmarks }}: VideoCardProps) {
+export default function VideoCard({page, video: { $id: videoId, title, thumbnail, prompt, video, creator: {  $id: userId, username, avatar }, bookmarks, likes }}: VideoCardProps) {
     const { user } = useContext(Context)!;
     const [play, setPlay] = useState(false);
     const [displayMenu, setDisplayMenu] = useState(false);
     const [marks, setMarks] = useState(bookmarks ?? []);
+    const [addLike, setAddLike] = useState(likes ?? []);
 
-    const modifyMarks = () => {
+    const modifyMarksOrLikes = async (type: string) => {
 
-        setMarks((prev : string[]) => {
-            let previous = [...prev];
-            if(previous.length === 0 || !previous.includes(user.$id)) {
-                previous.push(user.$id);
-            } else if(previous.includes(user.$id)) {
-                const filteredMarks = previous.filter(el => el !== user.$id);
-                previous = filteredMarks;
-            }
-            return previous;
-        })
-
+        if(type === "mark") {
+            setMarks((prev : string[]) => {
+                let previous = [...prev];
+                if(previous.length === 0 || !previous.includes(user.$id)) {
+                    previous.push(user.$id);
+                } else if(previous.includes(user.$id)) {
+                    const filteredMarks = previous.filter(el => el !== user.$id);
+                    previous = filteredMarks;
+                }
+                return previous;
+            })
+        } else if (type === "like") {
+            setAddLike((prev : string[]) => {
+                let previous = [...prev];
+                if(previous.length === 0 || !previous.includes(user.$id)) {
+                    previous.push(user.$id);
+                } else if(previous.includes(user.$id)) {
+                    const filteredMarks = previous.filter(el => el !== user.$id);
+                    previous = filteredMarks;
+                }
+                return previous;
+            })
+        }
+        
         const updatedVideo = {
             title: title,
             thumbnail: thumbnail,
             prompt: prompt,
             creator: userId,
             video: video,
-            bookmarks: marks
+            bookmarks: marks,
+            likes: addLike
         }
         
         updateVideo(videoId, updatedVideo);
+        router.replace(`/${page}`);
     }
 
     return (
@@ -67,14 +84,39 @@ export default function VideoCard({video: { $id: videoId, title, thumbnail, prom
                 {
                     displayMenu ? (
                         <View style={styles.menu}>
-                            <TouchableOpacity onPress={modifyMarks} style={styles.touch}>
+                            <TouchableOpacity onPress={() => modifyMarksOrLikes("mark")} style={styles.touch}>
                                 <Image 
-                                    source={marks.includes(userId) ? icons.mark : icons.unmark}
+                                    source={marks.includes(user.$id) ? icons.mark : icons.unmark}
                                     resizeMode="contain"
                                     style={styles.iconMark}
                                 />
                                 <Text style={styles.textMenu}>Favoris</Text>
                             </TouchableOpacity>
+                            <TouchableOpacity onPress={() => modifyMarksOrLikes("like")} style={styles.touch}>
+                                <Image 
+                                    source={addLike.includes(user.$id) ? icons.like : icons.unlike}
+                                    resizeMode="contain"
+                                    style={styles.iconLike}
+                                />
+                                <Text style={styles.textMenu}>Like</Text>
+                            </TouchableOpacity>
+                            {
+                                userId === user.$id
+                                ? (<TouchableOpacity onPress={() => {
+                                    deleteVideo(videoId)
+                                    router.replace(`/${page}`);
+                                    Alert.alert('Success', 'Video has been deleted successfully')
+                                }} style={styles.touch}>
+                                    <Image 
+                                        source={icons.basket}
+                                        resizeMode="contain"
+                                        style={styles.iconDelete}
+                                    />
+                                    <Text style={styles.textMenu}>Delete</Text>
+                                </TouchableOpacity>)
+                                : (<></>)
+                            }
+                            
                         </View>
                     ) : (<></>)
                 }
@@ -85,18 +127,20 @@ export default function VideoCard({video: { $id: videoId, title, thumbnail, prom
             {
                 play 
                 ? (
-                    <Video 
-                    source={{uri: video}}
-                    style={styles.video}
-                    resizeMode={ResizeMode.CONTAIN}
-                    useNativeControls={true}
-                    shouldPlay={true}
-                    onPlaybackStatusUpdate={(status: AVPlaybackStatus) => {
-                      if(status.isLoaded && status.didJustFinish) {
-                        setPlay(false)
-                      }
-                    }}
-                  />
+                    <View style={styles.containerVideo}>
+                        <Video 
+                        source={{uri: video}}
+                        style={styles.video}
+                        resizeMode={ResizeMode.CONTAIN}
+                        useNativeControls={true}
+                        shouldPlay={true}
+                        onPlaybackStatusUpdate={(status: AVPlaybackStatus) => {
+                            if(status.isLoaded && status.didJustFinish) {
+                                setPlay(false)
+                            }
+                        }}
+                        />
+                    </View>
                 ) 
                 : (
                     <TouchableOpacity 
@@ -114,6 +158,14 @@ export default function VideoCard({video: { $id: videoId, title, thumbnail, prom
                             resizeMode="contain"
                             style={styles.iconPlay}
                         />
+                        <View style={styles.containerLike}>
+                            <Image 
+                                source={addLike.includes(user.$id) ? icons.like : icons.likeVideo}
+                                resizeMode="contain"
+                                style={styles.iconLikeVideo}
+                            />
+                            <Text style={styles.countLikes}>{(addLike.length >= 1000 ) ? `${addLike.length/1000} k` : `${addLike.length}`}</Text>
+                        </View>
                     </TouchableOpacity>
                 )
             }
@@ -183,7 +235,6 @@ const styles = StyleSheet.create({
     menu: {
         position: 'absolute',
         width: 150,
-        minHeight: 75,
         top: 15,
         right: 15,
         zIndex: 10,
@@ -191,6 +242,7 @@ const styles = StyleSheet.create({
         borderColor: colors.grey[100],
         backgroundColor: colors.primary,
         paddingTop: 15,
+        paddingBottom: 15,
         paddingLeft: 15,
         borderRadius: 15
     },
@@ -230,7 +282,41 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     iconMark: {
+        width: 15,
+        height: 15
+    },
+    containerVideo: {
+        position: 'relative'
+    },
+    iconLike: {
+        width: 15,
+        height: 15
+    },
+    textLike: {
+        color: colors.white,
+        fontSize: 18,
+        fontWeight: '600'
+    },
+    containerLike: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "absolute",
+        top: 15,
+        left: 15,
+        gap: 5,
+    },
+    iconLikeVideo: {
         width: 25,
-        height: 25
+        height: 25,
+    },
+    countLikes: {
+        fontSize: 20,
+        color: colors.white,
+        fontWeight: "bold"
+    },
+    iconDelete: {
+        width: 15,
+        height: 15
     }
 })

@@ -30,7 +30,6 @@ export default function Index() {
           <CustomButton 
             title={"Continue with Email"} 
             handlePress={() => router.push('/signin')}
-            styles={styleButton}
           />
         </View>
         

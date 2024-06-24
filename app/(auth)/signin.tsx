@@ -62,7 +62,6 @@ export default function Signin() {
           <CustomButton
             title={'Sign In'}
             handlePress={submit}
-            styles={styleButton}
             loading={isSubmitting}
           />
 

@@ -54,6 +54,7 @@ export const createUser = async (email: string, password: string, username: stri
                 email,
                 username,
                 avatar: avatarUrl,
+                role: "member"
             }
         )
         return newUser;
@@ -93,6 +94,23 @@ export async function getCurrentUser() {
     catch(error: any) {
         //console.log('Error Get Current User : ', error);
         return null;
+    }
+}
+
+// All
+export async function deleteVideo(videoId: string) {
+    try {
+        const video = await databases.deleteDocument(
+            databaseId,
+            videoCollectionId,
+            videoId
+        )
+
+        if(!video) throw new Error('Video not found')
+        return video
+    }
+    catch(error) {
+        throw new Error(`Error Delete Video : ${error}`)
     }
 }
 
@@ -232,7 +250,8 @@ export async function createVideo(form: CreateVideoType) {
                 video: videoUrl,
                 prompt: form.prompt,
                 creator: form.userId,
-                bookmarks: form.marks
+                bookmarks: form.marks,
+                likes: form.addLikes
             }
         )
 
@@ -289,6 +308,37 @@ export async function updateVideo(videoId: string, datas: VideoType) {
     }
     catch(error) {
         throw new Error(`Error Get Favorite : ${error}`)
+    }
+}
+
+// Admin
+export async function getAllUsers() {
+    try{
+        const users = await databases.listDocuments(
+            databaseId,
+            userCollectionId,
+            [Query.orderAsc('username')]
+        )
+        
+        return users.documents;
+    }
+    catch(error) {
+        //console.log('Error Get All Posts : ', error)
+        throw new Error(`${error}`);
+    }
+}
+
+export async function getAllFiles() {
+    try{
+        const files = await storage.listFiles(
+            storageId
+        )
+        
+        return files.files;
+    }
+    catch(error) {
+        //console.log('Error Get All Posts : ', error)
+        throw new Error(`${error}`);
     }
 }
 

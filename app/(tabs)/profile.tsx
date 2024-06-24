@@ -12,7 +12,7 @@ import { router } from "expo-router";
 
 export default function Profile() {
   const { user, setUser, setIsLoggedIn } = useContext(Context)!;
-  const { data: listPosts } = useAppwrite(getUserPosts(user?.$id));
+  const { data: listPosts, refetch } = useAppwrite(getUserPosts(user?.$id));
 
   const logout = async () => {
     try{ 
@@ -33,20 +33,33 @@ export default function Profile() {
         renderItem={({item}) => (
             <VideoCard 
             video={item}
+            page={"profile"}
             />
         )}
         ListHeaderComponent={() => (
           <View style={styles.header}>
-            <TouchableOpacity
-              style={styles.touchHeader}
-              onPress={logout}
-            >
-              <Image 
-                source={icons.logout}
-                resizeMode="contain"
-                style={styles.logout}
-              />
-            </TouchableOpacity>
+            <View style={styles.dashAndLogout}>
+              {
+                user.role === "admin"
+                && (
+                  <TouchableOpacity onPress={() => router.push("/dashboard")}>
+                    <Image 
+                      source={icons.dashboard}
+                      resizeMode="contain"
+                      style={styles.dashboard}
+                    />
+                  </TouchableOpacity>
+                )
+              }
+
+              <TouchableOpacity onPress={logout}>
+                <Image 
+                  source={icons.logout}
+                  resizeMode="contain"
+                  style={styles.logout}
+                />
+              </TouchableOpacity>
+            </View>
 
             <View style={styles.containerAvatar}>
               <Image 
@@ -98,12 +111,21 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     paddingHorizontal: 7
   },
-  touchHeader: { 
+  dashAndLogout: {
     width: "100%",
-    alignItems: "flex-end",
+    justifyContent: "flex-end",
+    flexDirection: "row",
     marginBottom: 10,
+    gap: 10
   },
   logout: {
+    width: 25,
+    height: 25
+  },
+  dashboard: {
+    borderWidth: 2,
+    borderColor: colors.secondary.default,
+    borderRadius: 5,
     width: 25,
     height: 25
   },

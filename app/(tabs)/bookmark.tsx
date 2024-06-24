@@ -27,7 +27,8 @@ export default function Profile() {
         keyExtractor={(item) => item.$id}
         renderItem={({item}) => (
             <VideoCard 
-            video={item}
+              video={item}
+              page={"bookmark"}
             />
         )}
         ListHeaderComponent={() => (
