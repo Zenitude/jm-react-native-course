@@ -26,6 +26,7 @@ export default function Search() {
         renderItem={({item}) => (
             <VideoCard 
             video={item}
+            page={`/search/${query}`}
             />
         )}
         ListHeaderComponent={() => (

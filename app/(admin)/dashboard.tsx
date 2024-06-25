@@ -30,7 +30,7 @@ export default function Dashboard() {
     gif: listFiles.filter(el => el.mimeType === "image/gif").length,
     sizeGif: ((listFiles.filter(el => el.mimeType === "image/png").map(el => el.sizeOriginal).reduce((acc, current) => acc + current, 0))/1000000).toFixed(2)
   }
-  console.log(listUsers[0])
+
   useEffect(() => {
     if(user.role !== "admin") {
       router.replace("/home")

@@ -342,5 +342,40 @@ export async function getAllFiles() {
     }
 }
 
+export async function deleteUser(userId: string) {
+    try {
+
+        const videos = await databases.listDocuments(
+            databaseId,
+            videoCollectionId,
+            [Query.equal('creator', userId)]
+        )
+
+        if(!videos) throw new Error('Videos not found')
+
+        videos.documents.forEach(el => {
+            databases.deleteDocument(
+                databaseId,
+                videoCollectionId,
+                el.$id
+            )
+        })
+
+        const user = await databases.deleteDocument(
+            databaseId,
+            userCollectionId,
+            userId
+        )
+
+        if(!user) throw new Error('User not found')
+        return user
+    }
+    catch(error) {
+        throw new Error(`Error Delete Video : ${error}`)
+    }
+}
+
+export async function deleteFile(fileId: string) {}
+
 
 
