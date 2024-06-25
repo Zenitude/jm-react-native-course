@@ -28,6 +28,8 @@ type UserType = {
     avatar: string;
     accountId: string;
     role: string;
+    password?: string;
+    confirm?: string;
 }
 
 type VideoType = {

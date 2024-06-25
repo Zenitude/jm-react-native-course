@@ -328,6 +328,24 @@ export async function getAllUsers() {
     }
 }
 
+export async function getUser(userId: string) {
+    try{
+        const users = await databases.listDocuments(
+            databaseId,
+            userCollectionId,
+            [Query.equal("$id", userId)]
+        )
+
+        const user = users.documents[0]
+        
+        return user;
+    }
+    catch(error) {
+        //console.log('Error Get All Posts : ', error)
+        throw new Error(`${error}`);
+    }
+}
+
 export async function getAllFiles() {
     try{
         const files = await storage.listFiles(
