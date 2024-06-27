@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, Modal } from "react-native";
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppwrite } from "../../hooks/useAppwrite";
@@ -6,6 +6,7 @@ import { getAllUsers, deleteUser } from "../../lib/appwrite";
 import { colors, icons } from "../../constants";
 import { Context } from "../../context/GlobalProvider";
 import { router } from "expo-router";
+import ModalDelete from "../../components/Modal";
 
 export default function users() {
   const { user } = useContext(Context)!;
@@ -36,51 +37,37 @@ export default function users() {
             <Text style={headerStyles.title}>Users</Text>
           </View>
         }
-        renderItem={({item: user}) => (
+        renderItem={({item}) => (
           <View style={itemStyles.container}>
-            <TouchableOpacity onPress={() => router.push(`/users/${user.$id}`)} style={itemStyles.userTouch}>
+            <TouchableOpacity onPress={() => router.push(`/users/${item.$id}`)} style={itemStyles.userTouch}>
               <Image 
-                source={{uri: user.avatar}}
+                source={{uri: item.avatar}}
                 resizeMode="contain"
                 style={itemStyles.avatar}
               />
-              <Text style={itemStyles.username}>{user.username}</Text>
+              <Text style={itemStyles.username}>{item.username}</Text>
             </TouchableOpacity>
             <View style={itemStyles.actions}>
-              <TouchableOpacity onPress={() => setModal(true)}>
+              <TouchableOpacity onPress={() => router.push(`/users/edit/${item.$id}`)}>
+                <Image 
+                  source={icons.edit}
+                  resizeMode="contain"
+                  style={itemStyles.iconEdit}
+                  />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push(`/users/delete/${item.$id}`)}>
                 <Image 
                   source={icons.basket}
                   resizeMode="contain"
                   style={itemStyles.iconDelete}
                   />
               </TouchableOpacity>
-              <Modal
-                animationType={"fade"}
-                transparent={true}
-                visible={modal}
-                onRequestClose={() => {
-                  setModal(false);
-                }}
-              >
-                <View style={itemStyles.modalContent}>
-                  <View style={itemStyles.headerModal}>
-                    <TouchableOpacity onPress={() => setModal(false)} style={itemStyles.closeModal}>
-                      <Text style={itemStyles.closeModalText}>X</Text>
-                    </TouchableOpacity>
-                    <Text style={itemStyles.titleModal}>Delete user {user.username} ?</Text>
-                  </View>
-                  <View style={itemStyles.buttonsContainer}>
-                    <TouchableOpacity onPress={() => setModal(false)} style={itemStyles.cancelModal}>
-                      <Text style={itemStyles.cancelModalText}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => deleteUser(user.$id, user.accountId)} style={itemStyles.confirmModal}>
-                      <Text style={itemStyles.confirmModalText}>Confirm</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <Text style={itemStyles.infos}>If you delete user, you also delete all his posts</Text>
-                </View>
-              </Modal>
             </View>
+            <ModalDelete
+                details={item}
+                openclose={modal}
+                setter={setModal}
+              />
           </View>
         )}
         
@@ -169,78 +156,4 @@ const itemStyles = StyleSheet.create({
     width: 25,
     height: 25
   },
-  modalContent: {
-    width: 260,
-    paddingHorizontal: 5,
-    paddingTop: 5,
-    paddingBottom: 10,
-    backgroundColor: colors.black[200],
-    gap: 10,
-    borderColor: colors.grey[100],
-    borderWidth: 2,
-    position: "absolute",
-    top: "50%",
-    left: "25%",
-    borderRadius: 5
-  },
-  headerModal: {
-    width: "100%",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  titleModal: {
-    color: colors.white,
-    fontWeight: "bold",
-    width: "100%",
-    textAlign: "center",
-  },
-  closeModal: {
-    backgroundColor: colors.grey[100],
-    height: 25,
-    width: 25,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    alignSelf: "flex-end"
-  },
-  closeModalText: {
-    color: colors.white,
-    fontWeight: "bold",
-  },
-  buttonsContainer: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-  },
-  cancelModal: {
-    backgroundColor: colors.secondary.default,
-    height: 35,
-    width: 80,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  cancelModalText: {
-    color: colors.black.default,
-    fontWeight: "bold",
-  },
-  confirmModal: {
-    backgroundColor: colors.red.default,
-    height: 35,
-    width: 80,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  confirmModalText: {
-    color: colors.white,
-    fontWeight: "bold",
-  },
-  infos: {
-    color: colors.white,
-    fontSize: 12,
-    textAlign: "center"
-  }
 })

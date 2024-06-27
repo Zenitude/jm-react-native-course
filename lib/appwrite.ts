@@ -338,7 +338,7 @@ export async function getUser(userId: string) {
             [Query.equal("$id", userId)]
         )
         if(!users) throw new Error("Something went wrong")
-               
+     
         return users.documents;
     }
     catch(error) {

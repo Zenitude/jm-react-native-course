@@ -73,8 +73,7 @@ export default function Details() {
   const { user } = useContext(Context)!;
   const { id } = useLocalSearchParams();
   const [edit, setEdit] = useState(false);
-  const { data: detailsUser, refetch } = useAppwrite(getUser(typeof id === "string" ? id : id!.join("")));
-  console.log('details : ', detailsUser[0])
+  const { data: detailsUser, refetch } = useAppwrite(getUser(typeof id === "string" ? id! : id!.join("")));
   const [userData, setUserData] = useState({
     email: "", 
     role: "member", 
