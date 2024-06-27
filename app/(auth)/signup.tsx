@@ -10,7 +10,7 @@ import { Context } from "../../context/GlobalProvider";
 
 export default function Signup() {
   const { setUser, setIsLoggedIn } = useContext(Context)!;
-  const [form, setForm] = useState<FormFieldSetter>({ username: "", email: "", password: "", confirm: "" })
+  const [form, setForm] = useState<FormFieldSetter>({ username: "", email: "", password: "", confirm: "", role: "member" })
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async (e: GestureResponderEvent) => {
@@ -21,7 +21,7 @@ export default function Signup() {
 
     try {
       if((form as SignType).password === (form as SignType).confirm) {
-        const result = await createUser((form as SignType).email, (form as SignType).password, (form as SignType).username!);
+        const result = await createUser("signup", (form as SignType).email, (form as SignType).password, (form as SignType).username!, (form as SignType).role!);
         setUser(result)
         setIsLoggedIn(true);
         router.replace('/home')

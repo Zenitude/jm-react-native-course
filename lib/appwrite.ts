@@ -37,13 +37,15 @@ export async function signIn(email: string, password: string) {
     }
 }
 
-export const createUser = async (email: string, password: string, username: string) => {
+export const createUser = async (type: string, email: string, password: string, username: string, role: string) => {
     try {
         const newAccount = await account.create(ID.unique(), email, password, username);
         if(!newAccount) throw Error;
         const avatarUrl = avatars.getInitials(username);
 
-        await signIn(email, password);
+        if(type === "signup") {
+            await signIn(email, password);
+        }
         
         const newUser = await databases.createDocument(
             databaseId,
@@ -54,7 +56,7 @@ export const createUser = async (email: string, password: string, username: stri
                 email,
                 username,
                 avatar: avatarUrl,
-                role: "member"
+                role: role ? role : "member"
             }
         )
         return newUser;
@@ -335,10 +337,9 @@ export async function getUser(userId: string) {
             userCollectionId,
             [Query.equal("$id", userId)]
         )
-
-        const user = users.documents[0]
-        
-        return user;
+        if(!users) throw new Error("Something went wrong")
+               
+        return users.documents;
     }
     catch(error) {
         //console.log('Error Get All Posts : ', error)
@@ -360,7 +361,7 @@ export async function getAllFiles() {
     }
 }
 
-export async function deleteUser(userId: string) {
+export async function deleteUser(userId: string, accountId: string) {
     try {
 
         const videos = await databases.listDocuments(
@@ -386,6 +387,9 @@ export async function deleteUser(userId: string) {
         )
 
         if(!user) throw new Error('User not found')
+
+        await account.deleteIdentity(accountId);
+
         return user
     }
     catch(error) {
@@ -395,5 +399,22 @@ export async function deleteUser(userId: string) {
 
 export async function deleteFile(fileId: string) {}
 
+export async function updateUser(userId: string, datas: UserType, oldPassword: string) {
+    try {
+        const updatedUser = await databases.updateDocument(
+            databaseId,
+            userCollectionId,
+            userId,
+            datas
+        )
+        await account.updateEmail(datas.email, datas.password!);
+        await account.updatePassword(datas.password!, oldPassword);
+        await account.updateName(datas.username);
 
+        return  updatedUser;
+    }
+    catch(error) {
+        throw new Error(`Error Get Favorite : ${error}`)
+    }
+}
 

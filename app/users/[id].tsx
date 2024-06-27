@@ -1,11 +1,12 @@
 import { StyleSheet, Text, TextInput, View, Image, KeyboardTypeOptions, TouchableOpacity, ScrollView } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Models } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, icons } from "../../constants";
 import { useAppwrite } from "../../hooks/useAppwrite";
 import { getUser } from "../../lib/appwrite";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
+import { Context } from "../../context/GlobalProvider";
 
 type EditProps = {
   edit: boolean;
@@ -69,22 +70,53 @@ const editStyles = StyleSheet.create({
 
 //edit, label, data, keyboard, setter
 export default function Details() {
+  const { user } = useContext(Context)!;
   const { id } = useLocalSearchParams();
   const [edit, setEdit] = useState(false);
-  const { data: detailsUser, refetch } = useAppwrite(getUser(typeof id === "string" ? id : ""));
-  const [user, setUser] = useState(detailsUser[0]);
+  const { data: detailsUser, refetch } = useAppwrite(getUser(typeof id === "string" ? id : id!.join("")));
+  console.log('details : ', detailsUser[0])
+  const [userData, setUserData] = useState({
+    email: "", 
+    role: "member", 
+    username: ""
+  });
+  //console.log('username : ', detailsUser ? detailsUser[0].$id : "pas trouvé")
+  
+  useEffect(() => {
+    if(user.role !== "admin") { router.replace("/home") }
+  }, [])
+
+  useEffect(() => {
+    refetch();
+  }, [id])
 
   return (
     <SafeAreaView>
       <ScrollView>
 
-      <Edit 
+      {/* <Edit 
         edit={edit}
         label={"Username"}
-        data={user.username}
+        data={detailsUser[0].username}
         keyboard={"default"}
-        setter={setUser}
-        />
+        setter={setUserData}
+      /> */}
+
+      {/* <Edit 
+        edit={edit}
+        label={"Email"}
+        data={detailsUser[0].username}
+        keyboard={"Email Address"}
+        setter={setUserData}
+      /> */}
+
+      {/* <Edit 
+        edit={edit}
+        label={"Role"}
+        data={detailsUser[0].role}
+        keyboard={"default"}
+        setter={setUserData}
+      /> */}
       </ScrollView>
     </SafeAreaView>
   )

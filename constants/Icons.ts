@@ -1,5 +1,7 @@
 import basket from "../assets/icons/basket.png";
 import bookmark from "../assets/icons/bookmark.png";
+import chevronUp from "../assets/icons/chevron-up.png";
+import chevronDown from "../assets/icons/chevron-down.png";
 import dashboard from "../assets/icons/dashboard.png";
 import edit from "../assets/icons/edit.png";
 import eyeHide from "../assets/icons/eye-hide.png";
@@ -20,4 +22,4 @@ import unlike from "../assets/icons/unlike.png";
 import unmark from "../assets/icons/unmark.png";
 import upload from "../assets/icons/upload.png";
 
-export default { basket, bookmark, dashboard, edit, eyeHide, eye, home, left, like, likeVideo, logout, mark, menu, play, plus, profile, right, search, unlike, unmark, upload }
+export default { basket, bookmark, chevronDown, chevronUp, dashboard, edit, eyeHide, eye, home, left, like, likeVideo, logout, mark, menu, play, plus, profile, right, search, unlike, unmark, upload }

@@ -47,13 +47,6 @@ export default function users() {
               <Text style={itemStyles.username}>{user.username}</Text>
             </TouchableOpacity>
             <View style={itemStyles.actions}>
-              <TouchableOpacity onPress={() => router.push(`/users/edit/${user.$id}`)}>
-                <Image 
-                  source={icons.edit}
-                  resizeMode="contain"
-                  style={itemStyles.iconEdit}
-                  />
-              </TouchableOpacity>
               <TouchableOpacity onPress={() => setModal(true)}>
                 <Image 
                   source={icons.basket}
@@ -80,7 +73,7 @@ export default function users() {
                     <TouchableOpacity onPress={() => setModal(false)} style={itemStyles.cancelModal}>
                       <Text style={itemStyles.cancelModalText}>Cancel</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => deleteUser(user.$id)} style={itemStyles.confirmModal}>
+                    <TouchableOpacity onPress={() => deleteUser(user.$id, user.accountId)} style={itemStyles.confirmModal}>
                       <Text style={itemStyles.confirmModalText}>Confirm</Text>
                     </TouchableOpacity>
                   </View>
