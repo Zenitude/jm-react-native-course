@@ -23,13 +23,16 @@ type EmptyStateProps = {
 }
 
 type UserType = {
+    $id?: string;
+    $createdAt?: string;
     username: string;
     email: string;
-    avatar: string;
+    avatar: ImageSourcePropType;
     accountId: string;
     role: string;
     password?: string;
     confirm?: string;
+    id?: string;
 }
 
 type VideoType = {

@@ -6,7 +6,6 @@ import { getAllUsers, deleteUser } from "../../lib/appwrite";
 import { colors, icons } from "../../constants";
 import { Context } from "../../context/GlobalProvider";
 import { router } from "expo-router";
-import ModalDelete from "../../components/Modal";
 
 export default function users() {
   const { user } = useContext(Context)!;
@@ -48,13 +47,17 @@ export default function users() {
               <Text style={itemStyles.username}>{item.username}</Text>
             </TouchableOpacity>
             <View style={itemStyles.actions}>
-              <TouchableOpacity onPress={() => router.push(`/users/edit/${item.$id}`)}>
-                <Image 
-                  source={icons.edit}
-                  resizeMode="contain"
-                  style={itemStyles.iconEdit}
-                  />
-              </TouchableOpacity>
+              {
+                user.$id === item.$id && (
+                  <TouchableOpacity onPress={() => router.push(`/users/edit/${item.$id}`)}>
+                    <Image 
+                      source={icons.edit}
+                      resizeMode="contain"
+                      style={itemStyles.iconEdit}
+                      />
+                  </TouchableOpacity>
+                )
+              }
               <TouchableOpacity onPress={() => router.push(`/users/delete/${item.$id}`)}>
                 <Image 
                   source={icons.basket}
@@ -63,11 +66,6 @@ export default function users() {
                   />
               </TouchableOpacity>
             </View>
-            <ModalDelete
-                details={item}
-                openclose={modal}
-                setter={setModal}
-              />
           </View>
         )}
         

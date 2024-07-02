@@ -10,8 +10,8 @@ import { useAppwrite } from "../../hooks/useAppwrite";
 import { searchPosts } from "../../lib/appwrite";
 
 export default function Search() {
-  const { query } = useLocalSearchParams();
-  const { data: listPosts, refetch } = useAppwrite(searchPosts(typeof query === "string" ? query : query!.join("")));
+  const { query } = useLocalSearchParams<{query: string}>();
+  const { data: listPosts, refetch } = useAppwrite(searchPosts(query!));
 
   useEffect(() => {
     refetch();
@@ -34,7 +34,7 @@ export default function Search() {
             <Text style={styles.textFirst}>Search Results</Text>
             <Text style={styles.textSecond}>{query}</Text>
             <View style={styles.containerInput}></View>
-            <SearchInput initialQuery={typeof query === "string" ? query : query!.join("")} refetch={refetch} />
+            <SearchInput initialQuery={query} refetch={refetch} />
           </View>
         )}
         ListEmptyComponent={() => (

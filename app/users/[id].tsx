@@ -1,97 +1,99 @@
-import { StyleSheet, Text, TextInput, View, Image, KeyboardTypeOptions, TouchableOpacity, ScrollView } from "react-native";
+import { StyleSheet, Text, TextInput, View, Image, KeyboardTypeOptions, TouchableOpacity, FlatList } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { Models } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, icons } from "../../constants";
 import { useAppwrite } from "../../hooks/useAppwrite";
-import { getUser } from "../../lib/appwrite";
-import { useLocalSearchParams, router } from "expo-router";
+import { getInfosUser } from "../../lib/appwrite";
+import { useLocalSearchParams, router, Link } from "expo-router";
 import { Context } from "../../context/GlobalProvider";
+import EmptyState from "../../components/EmptyState";
+import VideoCard from "../../components/VideoCard";
 
-type EditProps = {
-  edit: boolean;
-  label: string;
-  data: string;
-  keyboard: KeyboardTypeOptions;
-  setter: React.Dispatch<React.SetStateAction<Models.Document>>
-}
-
-
-const Edit = ({edit, label, data, keyboard, setter} : EditProps) => {
-  const [showPassword, setShowPassword] = useState(false);
-
-  const changeText = (text: string) => setter((prev: Models.Document) => {
-    const previous = {...prev};
-
-    if(label === "Username") { previous.username = text}
-    else if(label === "Email") { previous.email = text}
-    else if(label === "Password") { previous.password = text}
-    else if(label === "Confirm") { previous.confirm = text }
-    else if(label === "Role") { previous.role = text}
-    
-    return previous;
-  })
-
-  if(edit) {
-    return (
-      <View style={editStyles.field}>
-        <TextInput       
-            autoCapitalize="none"
-            style={editStyles.input}
-            value={data}
-            placeholder={""}
-            placeholderTextColor={colors.placeholder}
-            keyboardType={keyboard}
-            onChangeText={changeText}
-            secureTextEntry={(label === "Password" || label === "Confirm") && !showPassword}
-        ></TextInput>
-        {(label === "Password" || label === "Confirm") && (
-            <TouchableOpacity
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <Image 
-                source={showPassword ? icons.eyeHide : icons.eye}
-                resizeMode="contain"
-                style={editStyles.eye}
-              />
-            </TouchableOpacity>
-          )}
-      </View>
-    )
-  }
-  else {<Text>{label} : {data}</Text>}
-}
-
-const editStyles = StyleSheet.create({
-  field: {},
-  input: {},
-  eye: {},
-})
-
-//edit, label, data, keyboard, setter
 export default function Details() {
   const { user } = useContext(Context)!;
-  const { id } = useLocalSearchParams();
-  const [edit, setEdit] = useState(false);
-  const { data: detailsUser, refetch } = useAppwrite(getUser(typeof id === "string" ? id! : id!.join("")));
-  const [userData, setUserData] = useState({
-    email: "", 
-    role: "member", 
-    username: ""
-  });
-  //console.log('username : ', detailsUser ? detailsUser[0].$id : "pas trouvé")
+  const { id } = useLocalSearchParams<{id: string}>();
+  const { data: detailsUser, refetch, isLoading } = useAppwrite(getInfosUser(id!));
+  const [ dateTime, setDateTime ] = useState({date: "", time: ""})
+  const [ infosUser, setInfosUser ] = useState<UserType>({
+    avatar: "",
+    id: "",
+    accountId: "",
+    username: "",
+    email: "",
+    role: "",
+  })
   
+  async function getDatas() {
+    const decomposeTime = detailsUser[0].$createdAt ? detailsUser[0].$createdAt.split("T1") : [];
+    const endTime = decomposeTime[1].slice(7)
+
+    setDateTime({
+      date: decomposeTime[0].split("-").reverse().join("/"),
+      time: decomposeTime[1].replace(endTime, "")
+    })
+    
+    setInfosUser({
+      avatar: detailsUser[0].avatar,
+      id: id,
+      accountId: detailsUser[0].accountId,
+      username: detailsUser[0].username,
+      email: detailsUser[0].email,
+      role: detailsUser[0].role,
+    })
+  }
+
   useEffect(() => {
     if(user.role !== "admin") { router.replace("/home") }
+    getDatas();
   }, [])
 
   useEffect(() => {
-    refetch();
+    refetch()
   }, [id])
-
+  
   return (
-    <SafeAreaView>
-      <ScrollView>
+    <SafeAreaView style={mainStyles.area}>
+      { isLoading && (<Text>Loading user details ...</Text>) }
+      { (detailsUser && detailsUser[0]) && 
+        (
+          <FlatList
+            data={detailsUser[0].videos}
+            keyExtractor={(item) => item.creator}
+            ListHeaderComponent={(item) => (
+              <View style={headerStyles.container}>
+                <Link href={"/users"}>Users</Link>
+                <Text style={headerStyles.title}>User details of</Text>
+                <Text style={subtitleStyle}>{infosUser.username}</Text>
+                <Image style={headerStyles.avatar} source={infosUser.avatar} resizeMode="contain"/>
+                <View style={headerStyles.detailsContainer}>
+                  <Text style={headerStyles.label}>Id : <Text style={headerStyles.infos}>{infosUser.id}</Text></Text>
+                  <Text style={headerStyles.label}>Account Id : <Text style={headerStyles.infos}>{infosUser.accountId}</Text></Text>
+                  <Text style={headerStyles.label}>Username : <Text style={headerStyles.infos}>{infosUser.username}</Text></Text>
+                  <Text style={headerStyles.label}>Email : <Text style={headerStyles.infos}>{infosUser.email}</Text></Text>
+                  <Text style={headerStyles.label}>Role : <Text style={headerStyles.infos}>{infosUser.role}</Text></Text>
+                  <Text style={headerStyles.label}>Join : <Text style={headerStyles.infos}>{dateTime.date} at {dateTime.time}</Text></Text>
+                </View>
+              </View>
+
+            )}
+            renderItem={(item) => (
+              <VideoCard
+                video={item}
+                page={`/users/${id}`}
+              />
+            )}
+            ListEmptyComponent={
+              <EmptyState 
+                title={"No Videos Found"}
+                subtitle={"User has no created any post"}
+                button={false}
+              />
+            }
+          />
+        )
+      }
+      
 
       {/* <Edit 
         edit={edit}
@@ -101,28 +103,48 @@ export default function Details() {
         setter={setUserData}
       /> */}
 
-      {/* <Edit 
-        edit={edit}
-        label={"Email"}
-        data={detailsUser[0].username}
-        keyboard={"Email Address"}
-        setter={setUserData}
-      /> */}
-
-      {/* <Edit 
-        edit={edit}
-        label={"Role"}
-        data={detailsUser[0].role}
-        keyboard={"default"}
-        setter={setUserData}
-      /> */}
-      </ScrollView>
     </SafeAreaView>
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-
+const mainStyles = StyleSheet.create({
+  area: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: colors.primary
   }
 })
+
+const headerStyles = StyleSheet.create({
+  container: {
+    paddingTop: 50,
+    paddingHorizontal: 5
+  },
+  title: {
+    fontSize: 22,
+    color: colors.white,
+    textAlign: "center"
+  },
+  subtitle: {
+    fontSize: 32,
+    textAlign: "center"
+  },
+  infos: {
+    color: colors.grey[100],
+    fontWeight: "normal"
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+  },
+  detailsContainer: {},
+  label: {
+    color: colors.white,
+    fontSize: 18,
+    fontWeight: "bold",
+    marginVertical: 5,
+    marginHorizontal: 10
+  }
+})
+
+const subtitleStyle = StyleSheet.compose(headerStyles.subtitle, headerStyles.infos)

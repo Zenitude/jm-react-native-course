@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import { Models } from "react-native-appwrite";
 import { getCurrentUser } from "../lib/appwrite";
+import { useLocalSearchParams } from "expo-router";
 
 export const Context = createContext<ContextType | null>(null);
 

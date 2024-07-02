@@ -418,3 +418,21 @@ export async function updateUser(userId: string, datas: UserType, oldPassword: s
     }
 }
 
+export async function getInfosUser(userId: string) {
+    const user = await getUser(userId);
+    
+    try {
+        const videos = await databases.listDocuments(
+            databaseId,
+            videoCollectionId,
+            [Query.equal('creator', userId)]
+        )
+
+        user[0].videos = videos.documents;
+        
+        return user;
+    }
+    catch(error) {
+        throw new Error(`Error Get Favorite : ${error}`)
+    }
+}

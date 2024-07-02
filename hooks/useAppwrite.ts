@@ -7,9 +7,15 @@ export const useAppwrite = (fn: any) => {
     const [data, setData] = useState<Models.Document[]>([]);
 
     const fetchData = async () => {
-        setIsLoading(true);
-
-        try { setData(await fn); }
+        try { 
+            const res = await fn;
+            if(res.length > 0) {
+                setIsLoading(true);
+                setData(await res);
+            } else {
+                setIsLoading(false);
+            }            
+        }
         catch(error: any) { Alert.alert('Error Fetch', `${error.message}`) } 
         finally { setIsLoading(false); }
     }
