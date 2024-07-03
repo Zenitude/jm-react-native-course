@@ -1,7 +1,7 @@
-import { StyleSheet, Text, TextInput, View, Image, KeyboardTypeOptions, TouchableOpacity, ScrollView } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors, icons } from "../../../constants";
+import { colors } from "../../../constants";
 import { useAppwrite } from "../../../hooks/useAppwrite";
 import { deleteUser, getUser } from "../../../lib/appwrite";
 import { useLocalSearchParams, router, Link } from "expo-router";
@@ -28,20 +28,21 @@ export default function Delete() {
           (
             <>
               <View style={styles.header}>
-                <Text >Delete user {detailsUser[0].username} ?</Text>
+                <Text style={styles.title}>Delete user ?</Text>
+                <Text style={styles.username}>{detailsUser[0].username}</Text>
               </View>
               <View style={styles.buttons}>
-                <TouchableOpacity onPress={() => router.push("/users")} style={styles.cancelButton}>
+                <TouchableOpacity onPress={() => router.push("/users")} style={styles.button}>
                     <Text style={styles.cancelText}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => deleteUser(id!, detailsUser[0].accountId)} style={styles.confirmButton}>
+                <TouchableOpacity onPress={() => deleteUser(id!, detailsUser[0].accountId)} style={styles.button}>
                     <Text style={styles.confirmText}>Confirm</Text>
                 </TouchableOpacity>
               </View>
-              <Text>If you delete user, you also delete all his posts</Text>
+              <Text style={styles.infos}>If you delete user, you also delete all his posts</Text>
               <View style={styles.back}>
                 <Text style={styles.backText}>Return to the </Text>
-                <Link href="/signup" style={styles.backLink}>List users</Link>
+                <Link href="/users" style={styles.backLink}>List users</Link>
               </View>
             </>
           )
@@ -53,15 +54,78 @@ export default function Delete() {
 }
 
 const styles = StyleSheet.create({
-  area: {},
-  header: {},
-  title: {},
-  buttons: {},
-  cancelButton: {},
-  cancelText: {},
-  confirmButton: {},
-  confirmText: {},
-  back: {},
-  backText: {},
-  backLink: {}
+  area: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: colors.primary,
+    paddingTop: 200
+  },
+  header: {
+    width: "100%",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10
+  },
+  title: {
+    color: colors.grey[100],
+    fontSize: 22,
+  },
+  username: {
+    color: colors.white,
+    fontWeight: "bold",
+    fontSize: 26
+  },
+  buttons: {
+    marginVertical: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 20
+  },
+  button: {
+    justifyContent: "center",
+    alignItems: "center",
+    fontWeight: "bold",
+    borderRadius: 15,
+  },
+  cancelText: {
+    borderRadius: 15,
+    color: colors.primary,
+    backgroundColor: colors.secondary.default,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    fontSize: 20,
+    fontWeight: "bold"
+  },
+  confirmText: {
+    borderRadius: 15,
+    backgroundColor: colors.red.default,
+    color: colors.white,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    fontSize: 20,
+    fontWeight: "bold"
+  },
+  infos: {
+    color: colors.white,
+    textAlign: "center",
+    fontSize: 17,
+    marginVertical: 20
+  },
+  back: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 20
+  },
+  backText: {
+    color: colors.white,
+    fontSize: 18
+  },
+  backLink: {
+    color: colors.secondary.default,
+    fontSize: 18,
+    fontWeight: "bold"
+  }
 })

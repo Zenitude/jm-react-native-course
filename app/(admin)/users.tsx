@@ -11,7 +11,7 @@ export default function users() {
   const { user } = useContext(Context)!;
   const { data: listUsers, refetch } = useAppwrite(getAllUsers());
   const [modal, setModal] = useState(false);
-
+  console.log('list : ', listUsers)
   useEffect(() => {
     if(user.role !== "admin") {
       router.replace("/home")
@@ -22,7 +22,7 @@ export default function users() {
     <SafeAreaView style={mainStyles.main}>
       <FlatList
         data={listUsers}
-        keyExtractor={(item) => item.$id}
+        keyExtractor={(item) => item["$id"]}
         ListHeaderComponent={
           <View style={headerStyles.container}>
             <TouchableOpacity onPress={() => router.push("/users/create")} style={headerStyles.createTouch}>
@@ -38,7 +38,7 @@ export default function users() {
         }
         renderItem={({item}) => (
           <View style={itemStyles.container}>
-            <TouchableOpacity onPress={() => router.push(`/users/${item.$id}`)} style={itemStyles.userTouch}>
+            <TouchableOpacity onPress={() => router.push(`/users/${item["$id"]}`)} style={itemStyles.userTouch}>
               <Image 
                 source={{uri: item.avatar}}
                 resizeMode="contain"
@@ -48,8 +48,8 @@ export default function users() {
             </TouchableOpacity>
             <View style={itemStyles.actions}>
               {
-                user.$id === item.$id && (
-                  <TouchableOpacity onPress={() => router.push(`/users/edit/${item.$id}`)}>
+                user["$id"] === item["$id"] && (
+                  <TouchableOpacity onPress={() => router.push(`/users/edit/${item["$id"]}`)}>
                     <Image 
                       source={icons.edit}
                       resizeMode="contain"
@@ -58,7 +58,7 @@ export default function users() {
                   </TouchableOpacity>
                 )
               }
-              <TouchableOpacity onPress={() => router.push(`/users/delete/${item.$id}`)}>
+              <TouchableOpacity onPress={() => router.push(`/users/delete/${item["$id"]}`)}>
                 <Image 
                   source={icons.basket}
                   resizeMode="contain"

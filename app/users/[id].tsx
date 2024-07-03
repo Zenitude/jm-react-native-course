@@ -23,7 +23,7 @@ export default function Details() {
     email: "",
     role: "",
   })
-  
+  console.log(id)
   async function getDatas() {
     const decomposeTime = detailsUser[0].$createdAt ? detailsUser[0].$createdAt.split("T1") : [];
     const endTime = decomposeTime[1].slice(7)
