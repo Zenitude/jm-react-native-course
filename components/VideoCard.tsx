@@ -6,22 +6,22 @@ import { Context } from "../context/GlobalProvider";
 import { updateVideo, deleteVideo } from "../lib/appwrite";
 import { router } from "expo-router";
 
-export default function VideoCard({page, video: { $id: videoId, title, thumbnail, prompt, video, creator: {  $id: userId, username, avatar }, bookmarks, likes }}: VideoCardProps) {
+export default function VideoCard({page, video}: VideoCardProps) {
     const { user } = useContext(Context)!;
     const [play, setPlay] = useState(false);
     const [displayMenu, setDisplayMenu] = useState(false);
-    const [marks, setMarks] = useState(bookmarks ?? []);
-    const [addLike, setAddLike] = useState(likes ?? []);
+    const [marks, setMarks] = useState((video && video.bookmarks) ? video.bookmarks : []);
+    const [addLike, setAddLike] = useState((video && video.likes) ? video.likes : []);
 
     const modifyMarksOrLikes = async (type: string) => {
 
         if(type === "mark") {
             setMarks((prev : string[]) => {
                 let previous = [...prev];
-                if(previous.length === 0 || !previous.includes(user.$id)) {
-                    previous.push(user.$id);
-                } else if(previous.includes(user.$id)) {
-                    const filteredMarks = previous.filter(el => el !== user.$id);
+                if(previous.length === 0 || !previous.includes(user["$id"])) {
+                    previous.push(user["$id"]);
+                } else if(previous.includes(user["$id"])) {
+                    const filteredMarks = previous.filter(el => el !== user["$id"]);
                     previous = filteredMarks;
                 }
                 return previous;
@@ -29,10 +29,10 @@ export default function VideoCard({page, video: { $id: videoId, title, thumbnail
         } else if (type === "like") {
             setAddLike((prev : string[]) => {
                 let previous = [...prev];
-                if(previous.length === 0 || !previous.includes(user.$id)) {
-                    previous.push(user.$id);
-                } else if(previous.includes(user.$id)) {
-                    const filteredMarks = previous.filter(el => el !== user.$id);
+                if(previous.length === 0 || !previous.includes(user["$id"])) {
+                    previous.push(user["$id"]);
+                } else if(previous.includes(user["$id"])) {
+                    const filteredMarks = previous.filter(el => el !== user["$id"]);
                     previous = filteredMarks;
                 }
                 return previous;
@@ -40,136 +40,143 @@ export default function VideoCard({page, video: { $id: videoId, title, thumbnail
         }
         
         const updatedVideo = {
-            title: title,
-            thumbnail: thumbnail,
-            prompt: prompt,
-            creator: userId,
-            video: video,
+            title: video.title,
+            thumbnail: video.thumbnail,
+            prompt: video.prompt,
+            creator: video.creator["$id"],
+            video: video.video,
             bookmarks: marks,
             likes: addLike
         }
         
-        updateVideo(videoId, updatedVideo);
+        updateVideo(video["$id"], updatedVideo);
         router.replace(`/${page}`);
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.subHeader}>
-                    <View style={styles.AvatarContainer}>
-                        <Image 
-                            source={{uri: avatar}}
-                            resizeMode="cover"
-                            style={styles.avatar}
-                        />
-                    </View>
-
-                    <View style={styles.informations}>
-                        <Text style={styles.title} numberOfLines={1}>{title}</Text>
-                        <Text style={styles.username} numberOfLines={1}>{username}</Text>
-                    </View>
-                </View>
-
-                <View style={styles.iconMenuContainer}>
-                    <TouchableOpacity onPress={() => setDisplayMenu(!displayMenu)}>
-                        <Image 
-                            source={icons.menu}
-                            resizeMode="contain"
-                            style={styles.iconMenu}
-                        />
-                    </TouchableOpacity>
-                </View>
-
-                {
-                    displayMenu ? (
-                        <View style={styles.menu}>
-                            <TouchableOpacity onPress={() => modifyMarksOrLikes("mark")} style={styles.touch}>
-                                <Image 
-                                    source={marks.includes(user.$id) ? icons.mark : icons.unmark}
-                                    resizeMode="contain"
-                                    style={styles.iconMark}
-                                />
-                                <Text style={styles.textMenu}>Favoris</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => modifyMarksOrLikes("like")} style={styles.touch}>
-                                <Image 
-                                    source={addLike.includes(user.$id) ? icons.like : icons.unlike}
-                                    resizeMode="contain"
-                                    style={styles.iconLike}
-                                />
-                                <Text style={styles.textMenu}>Like</Text>
-                            </TouchableOpacity>
-                            {
-                                userId === user.$id
-                                ? (<TouchableOpacity onPress={() => {
-                                    deleteVideo(videoId)
-                                    router.replace(`/${page}`);
-                                    Alert.alert('Success', 'Video has been deleted successfully')
-                                }} style={styles.touch}>
-                                    <Image 
-                                        source={icons.basket}
-                                        resizeMode="contain"
-                                        style={styles.iconDelete}
-                                    />
-                                    <Text style={styles.textMenu}>Delete</Text>
-                                </TouchableOpacity>)
-                                : (<></>)
-                            }
-                            
-                        </View>
-                    ) : (<></>)
-                }
-
-                
-            </View>
-
+        <>
             {
-                play 
-                ? (
-                    <View style={styles.containerVideo}>
-                        <Video 
-                        source={{uri: video}}
-                        style={styles.video}
-                        resizeMode={ResizeMode.CONTAIN}
-                        useNativeControls={true}
-                        shouldPlay={true}
-                        onPlaybackStatusUpdate={(status: AVPlaybackStatus) => {
-                            if(status.isLoaded && status.didJustFinish) {
-                                setPlay(false)
-                            }
-                        }}
-                        />
-                    </View>
-                ) 
-                : (
-                    <TouchableOpacity 
-                        style={styles.containerThumb}
-                        activeOpacity={0.5}
-                        onPress={() => setPlay(true)}
-                    >
-                        <Image 
-                            source={{uri: thumbnail}}
-                            resizeMode="cover"
-                            style={styles.thumbnail}
-                        />
-                        <Image 
-                            source={icons.play}
-                            resizeMode="contain"
-                            style={styles.iconPlay}
-                        />
-                        <View style={styles.containerLike}>
-                            <Image 
-                                source={addLike.includes(user.$id) ? icons.like : icons.likeVideo}
-                                resizeMode="contain"
-                                style={styles.iconLikeVideo}
-                            />
-                            <Text style={styles.countLikes}>{(addLike.length >= 1000 ) ? `${addLike.length/1000} k` : `${addLike.length}`}</Text>
+                (video && video.title)
+                ? (<View style={styles.container}>
+                    <View style={styles.header}>
+                        <View style={styles.subHeader}>
+                            <View style={styles.AvatarContainer}>
+                                <Image 
+                                    source={{uri: video.creator.avatar}}
+                                    resizeMode="cover"
+                                    style={styles.avatar}
+                                />
+                            </View>
+        
+                            <View style={styles.informations}>
+                                <Text style={styles.title} numberOfLines={1}>{video.title}</Text>
+                                <Text style={styles.username} numberOfLines={1}>{video.creator.username}</Text>
+                            </View>
                         </View>
-                    </TouchableOpacity>
-                )
+        
+                        <View style={styles.iconMenuContainer}>
+                            <TouchableOpacity onPress={() => setDisplayMenu(!displayMenu)}>
+                                <Image 
+                                    source={icons.menu}
+                                    resizeMode="contain"
+                                    style={styles.iconMenu}
+                                />
+                            </TouchableOpacity>
+                        </View>
+        
+                        {
+                            displayMenu ? (
+                                <View style={styles.menu}>
+                                    <TouchableOpacity onPress={() => modifyMarksOrLikes("mark")} style={styles.touch}>
+                                        <Image 
+                                            source={marks.includes(user["$id"]) ? icons.mark : icons.unmark}
+                                            resizeMode="contain"
+                                            style={styles.iconMark}
+                                        />
+                                        <Text style={styles.textMenu}>Favoris</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => modifyMarksOrLikes("like")} style={styles.touch}>
+                                        <Image 
+                                            source={addLike.includes(user["$id"]) ? icons.like : icons.unlike}
+                                            resizeMode="contain"
+                                            style={styles.iconLike}
+                                        />
+                                        <Text style={styles.textMenu}>Like</Text>
+                                    </TouchableOpacity>
+                                    {
+                                        video.creator["$id"] === user["$id"]
+                                        ? (<TouchableOpacity onPress={() => {
+                                            deleteVideo(video["$id"])
+                                            router.replace(`/${page}`);
+                                            Alert.alert('Success', 'Video has been deleted successfully')
+                                        }} style={styles.touch}>
+                                            <Image 
+                                                source={icons.basket}
+                                                resizeMode="contain"
+                                                style={styles.iconDelete}
+                                            />
+                                            <Text style={styles.textMenu}>Delete</Text>
+                                        </TouchableOpacity>)
+                                        : (<></>)
+                                    }
+                                    
+                                </View>
+                            ) : (<></>)
+                        }
+        
+                        
+                    </View>
+        
+                    {
+                        play 
+                        ? (
+                            <View style={styles.containerVideo}>
+                                <Video 
+                                source={{uri: video.video}}
+                                style={styles.video}
+                                resizeMode={ResizeMode.CONTAIN}
+                                useNativeControls={true}
+                                shouldPlay={true}
+                                onPlaybackStatusUpdate={(status: AVPlaybackStatus) => {
+                                    if(status.isLoaded && status.didJustFinish) {
+                                        setPlay(false)
+                                    }
+                                }}
+                                />
+                            </View>
+                        ) 
+                        : (
+                            <TouchableOpacity 
+                                style={styles.containerThumb}
+                                activeOpacity={0.5}
+                                onPress={() => setPlay(true)}
+                            >
+                                <Image 
+                                    source={{uri: video.thumbnail}}
+                                    resizeMode="cover"
+                                    style={styles.thumbnail}
+                                />
+                                <Image 
+                                    source={icons.play}
+                                    resizeMode="contain"
+                                    style={styles.iconPlay}
+                                />
+                                <View style={styles.containerLike}>
+                                    <Image 
+                                        source={addLike.includes(user["$id"]) ? icons.like : icons.likeVideo}
+                                        resizeMode="contain"
+                                        style={styles.iconLikeVideo}
+                                    />
+                                    <Text style={styles.countLikes}>{(addLike.length >= 1000 ) ? `${addLike.length/1000} k` : `${addLike.length}`}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        )
+                    }
+                </View>)
+                : (<Text>No video</Text>)
+
             }
-        </View>
+        </>
     )
 }
 

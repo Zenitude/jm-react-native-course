@@ -399,6 +399,22 @@ export async function deleteUser(userId: string, accountId: string) {
 
 export async function deleteFile(fileId: string) {}
 
+export async function editRole(userId: string, datas: UserType) {
+    try {
+        const updatedUser = await databases.updateDocument(
+            databaseId,
+            userCollectionId,
+            userId,
+            datas
+        )
+
+        return  updatedUser;
+    }
+    catch(error) {
+        throw new Error(`Error Get Favorite : ${error}`)
+    }
+}
+
 export async function updateUser(userId: string, datas: UserType, oldPassword: string) {
     try {
         const updatedUser = await databases.updateDocument(
