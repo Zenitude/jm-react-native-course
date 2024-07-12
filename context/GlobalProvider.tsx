@@ -1,11 +1,10 @@
 import React, { createContext, useState, useEffect } from "react";
 import { Models } from "react-native-appwrite";
 import { getCurrentUser } from "../lib/appwrite";
-import { useLocalSearchParams } from "expo-router";
 
 export const Context = createContext<ContextType | null>(null);
 
-export default function GlobalProdiver({children}: ProviderProps) {
+export default function GlobalProvider({children}: ProviderProps) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState<Models.Document | null>(null);
     const [isLoading, setIsLoading] = useState(true);

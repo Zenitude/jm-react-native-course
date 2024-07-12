@@ -3,10 +3,12 @@ import React, { useContext, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router"
 import { colors, images } from "../../constants";
-import { getCurrentUser, signIn } from "../../lib/appwrite";
+import { getCurrentUser, signIn, getUserByMail } from "../../lib/appwrite";
 import FormField from "../../components/FormField";
+import { useAppwrite } from "../../hooks/useAppwrite";
 import CustomButton from "../../components/CustomButton";
 import { Context } from "../../context/GlobalProvider";
+
 
 export default function Signin() {
   const { setUser, setIsLoggedIn } = useContext(Context)!;
@@ -20,11 +22,16 @@ export default function Signin() {
     setIsSubmitting(true);
 
     try {
-        await signIn((form as SignType).email, (form as SignType).password);
-        const result = await getCurrentUser();
+        //const { data: user } = useAppwrite(getUserByMail((form as SignType).email));
+        //const passwordUser = user[0].password;
+
+        signIn((form as SignType).email, (form as SignType).password);
+        const result = getCurrentUser();
         setUser(result)
         setIsLoggedIn(true);
         router.replace('/home');
+          
+        
     }
     catch(error: any) { Alert.alert('Error Signin', error.message); } 
     finally { setIsSubmitting(false); }

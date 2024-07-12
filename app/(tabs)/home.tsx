@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, FlatList, RefreshControl } from "react-native";
+import { View, Text, Image, StyleSheet, FlatList, RefreshControl, Alert } from "react-native";
 import React, { useContext, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, images } from "../../constants";
@@ -14,8 +14,8 @@ export default function Home() {
   const { user } = useContext(Context)!;
   const [refreshing, setRefreshing] = useState(false);
   const { data: listPosts, refetch } = useAppwrite(getAllPosts());
-  const { data: latestPosts } = useAppwrite(getLatestPosts());
-  
+  const { data: latestPosts } = useAppwrite(getLatestPosts()); 
+
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch();

@@ -27,7 +27,7 @@ export default function Create() {
 
     try {
       if((form as SignType).password === (form as SignType).confirm) {
-        const result = await createUser("user", (form as SignType).email, (form as SignType).password, (form as SignType).username!, (form as SignType).role);
+        const result = await createUser("user", (form as SignType).email, (form as SignType).password, (form as SignType).username!, (form as SignType).role!);
         setUser(result)
         setIsLoggedIn(true);
         router.replace('/users')

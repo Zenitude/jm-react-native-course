@@ -1,6 +1,5 @@
-import { StyleSheet, Text, TextInput, View, Image, KeyboardTypeOptions, TouchableOpacity, FlatList, RefreshControl } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, RefreshControl } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
-import { Models } from "react-native-appwrite";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, icons } from "../../constants";
 import { useAppwrite } from "../../hooks/useAppwrite";
@@ -48,7 +47,14 @@ export default function Details() {
             keyExtractor={(item) => item.creator + item["$id"]}
             ListHeaderComponent={(item) => (
               <View style={headerStyles.container}>
-                <Link href={"/users"}>Users</Link>
+                <Link href={"/users"} style={headerStyles.back}>List users</Link>
+                <TouchableOpacity onPress={() => router.push(`/users/delete/${detailsUser[0]["$id"]}`)} style={headerStyles.deleteUser}>
+                  <Image 
+                    source={icons.basket}
+                    resizeMode="contain"
+                    style={headerStyles.iconDelete}
+                    />
+                </TouchableOpacity>
                 <Text style={headerStyles.title}>User details of</Text>
                 <Text style={subtitleStyle}>{detailsUser[0].username}</Text>
                 <Image style={headerStyles.avatar} source={detailsUser[0].avatar} resizeMode="contain"/>
@@ -177,6 +183,18 @@ const headerStyles = StyleSheet.create({
   container: {
     paddingTop: 50,
     paddingHorizontal: 5
+  },
+  back: {
+    color: colors.secondary.default,
+    fontWeight: "bold",
+  },
+  deleteUser: {
+    width: "100%",
+    alignItems: "flex-end"
+  },
+  iconDelete: {
+    width: 25,
+    height: 25
   },
   title: {
     fontSize: 22,

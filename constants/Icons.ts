@@ -1,3 +1,4 @@
+import account from "../assets/icons/account.png";
 import basket from "../assets/icons/basket.png";
 import bookmark from "../assets/icons/bookmark.png";
 import cancelEdit from "../assets/icons/cancelEdit.png";
@@ -24,4 +25,4 @@ import unlike from "../assets/icons/unlike.png";
 import unmark from "../assets/icons/unmark.png";
 import upload from "../assets/icons/upload.png";
 
-export default { basket, bookmark, cancelEdit, chevronDown, chevronUp, dashboard, edit, eyeHide, eye, home, left, like, likeVideo, logout, mark, menu, play, plus, profile, right, search, submitEdit, unlike, unmark, upload }
+export default { account, basket, bookmark, cancelEdit, chevronDown, chevronUp, dashboard, edit, eyeHide, eye, home, left, like, likeVideo, logout, mark, menu, play, plus, profile, right, search, submitEdit, unlike, unmark, upload }

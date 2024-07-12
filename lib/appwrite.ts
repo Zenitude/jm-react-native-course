@@ -1,4 +1,5 @@
 import { Client, Account, Avatars, Databases, ID, Query, Storage, ImageGravity } from 'react-native-appwrite';
+// import sdk from "node-appwrite";
 import { ImagePickerAsset } from "expo-image-picker";
 
 export const appwriteConfig = {
@@ -8,7 +9,8 @@ export const appwriteConfig = {
     databaseId: '66608c9700326b63f61f',
     userCollectionId: '66608cc8003b0ab91113',
     videoCollectionId: '66608d0e00169a12a184',
-    storageId: '66608f7900002b723fbe'
+    storageId: '66608f7900002b723fbe',
+
 }
 
 const { endpoint, platform, projectId, databaseId, userCollectionId, videoCollectionId, storageId } = appwriteConfig;
@@ -29,7 +31,7 @@ const storage = new Storage(client);
 // SignIn, SignUp, SignOut
 export async function signIn(email: string, password: string) {
     try {
-        const session = await account.createEmailPasswordSession(email, password);
+        const session = account.createEmailPasswordSession(email, password);
         return session;
     } catch(error: any) {
         console.log('Error Sign In :', error);
@@ -39,14 +41,17 @@ export async function signIn(email: string, password: string) {
 
 export const createUser = async (type: string, email: string, password: string, username: string, role: string) => {
     try {
-        const newAccount = await account.create(ID.unique(), email, password, username);
+        const idUser = ID.unique();
+        const newAccount = await account.create(idUser, email, password, username);
+        const passwordHashed = password;
+
         if(!newAccount) throw Error;
         const avatarUrl = avatars.getInitials(username);
 
         if(type === "signup") {
             await signIn(email, password);
         }
-        
+
         const newUser = await databases.createDocument(
             databaseId,
             userCollectionId,
@@ -56,13 +61,14 @@ export const createUser = async (type: string, email: string, password: string, 
                 email,
                 username,
                 avatar: avatarUrl,
-                role: role ? role : "member"
+                role: role ? role : "member",
+                password: passwordHashed
             }
         )
         return newUser;
     }
     catch(error: any) {
-        //console.log('Error Create User : ', error);
+        console.log('Error Create User : ', error);
         throw new Error(error);
     }
 }
@@ -73,7 +79,7 @@ export async function signOut() {
         return session;
     }
     catch(error) {
-        //console.log('Error Sign Out : ', error);
+        console.log('Error Sign Out : ', error);
         throw new Error(`${error}`)
     }
 }
@@ -94,7 +100,7 @@ export async function getCurrentUser() {
         return currentUser.documents[0];
     }
     catch(error: any) {
-        //console.log('Error Get Current User : ', error);
+        console.log('Error Get Current User : ', error);
         return null;
     }
 }
@@ -112,6 +118,7 @@ export async function deleteVideo(videoId: string) {
         return video
     }
     catch(error) {
+        console.log('Error Delete Video : ', error);
         throw new Error(`Error Delete Video : ${error}`)
     }
 }
@@ -128,7 +135,7 @@ export async function getAllPosts() {
         return posts.documents;
     }
     catch(error) {
-        //console.log('Error Get All Posts : ', error)
+        console.log('Error Get All Posts : ', error)
         throw new Error(`${error}`);
     }
 }
@@ -144,7 +151,7 @@ export async function getLatestPosts() {
         return posts.documents;
     }
     catch(error) {
-        //console.log('Error Get Latest Posts : ', error);
+        console.log('Error Get Latest Posts : ', error);
         throw new Error(`${error}`);
     }
 }
@@ -162,7 +169,7 @@ export async function searchPosts(query: string) {
         return posts.documents;
     }
     catch(error) {
-        //console.log('Error Search Posts : ', error);
+        console.log('Error Search Posts : ', error);
         throw new Error(`${error}`);
     }
 }
@@ -184,7 +191,7 @@ export async function getUserPosts(userId: string) {
         } else { return []}
     }
     catch(error) {
-        //console.log('Error Get User Posts : ', error);
+        console.log('Error Get User Posts : ', error);
         throw new Error(`${error}`);
     }
 }
@@ -206,6 +213,7 @@ export async function getFilePreview(fileId: string, type: string) {
         return fileUrl;
     }
     catch(error) {
+        console.log('Error Get File Preview : ', error);
         throw new Error(`Error Get File Preview : ${error}`);
     }
 }
@@ -231,6 +239,7 @@ export async function uploadFile(file: ImagePickerAsset, type: string) {
         return fileUrl;
     }
     catch(error) {
+        console.log('Error Get Upload File : ', error);
         throw new Error(`Error Upload File : ${error}`);
     }
 }
@@ -260,6 +269,7 @@ export async function createVideo(form: CreateVideoType) {
         return newPost;
     }
     catch(error) {
+        console.log('Error Create Video : ', error);
         throw new Error(`Error create Video : ${error}`);
     }
 }
@@ -277,6 +287,7 @@ export async function getMarks(userId: string) {
         return posts.documents;
     }
     catch(error) {
+        console.log('Error Get Marks : ', error);
         throw new Error(`Error Get Favorite : ${error}`)
     }
 }
@@ -292,7 +303,8 @@ export async function getVideo(videoId: string) {
         return posts.documents[0];
     }
     catch(error) {
-        throw new Error(`Error Get Favorite : ${error}`)
+        console.log('Error Get Video : ', error);
+        throw new Error(`Error Get Video : ${error}`)
     }
 }
 
@@ -309,6 +321,7 @@ export async function updateVideo(videoId: string, datas: VideoType) {
         return  updatedVideo;
     }
     catch(error) {
+        console.log('Error Update Video : ', error);
         throw new Error(`Error Get Favorite : ${error}`)
     }
 }
@@ -325,7 +338,24 @@ export async function getAllUsers() {
         return users.documents;
     }
     catch(error) {
-        //console.log('Error Get All Posts : ', error)
+        console.log('Error Get All Users : ', error)
+        throw new Error(`${error}`);
+    }
+}
+
+export async function getUserByMail(email: string) {
+    try{
+        const users = await databases.listDocuments(
+            databaseId,
+            userCollectionId,
+            [Query.equal("email", email)]
+        )
+        if(!users) throw new Error("Something went wrong")
+     
+        return users.documents;
+    }
+    catch(error) {
+        console.log('Error Get User By Email : ', error)
         throw new Error(`${error}`);
     }
 }
@@ -342,7 +372,7 @@ export async function getUser(userId: string) {
         return users.documents;
     }
     catch(error) {
-        //console.log('Error Get All Posts : ', error)
+        console.log('Error Get User : ', error)
         throw new Error(`${error}`);
     }
 }
@@ -356,51 +386,96 @@ export async function getAllFiles() {
         return files.files;
     }
     catch(error) {
-        //console.log('Error Get All Posts : ', error)
+        console.log('Error Get All Files : ', error)
         throw new Error(`${error}`);
     }
 }
 
-export async function deleteUser(userId: string, accountId: string) {
-    try {
+export async function deleteActivities(userId: string, accountId: string) {
+    try {     
+        //Delete Sessions
+        const sessionsUsers = await account.listSessions();
+        const filteredSessions = sessionsUsers.sessions.filter(el => el["userId"] === accountId);
 
+        for(const session of filteredSessions) {
+            await account.deleteSession(session["$id"])
+        }
+
+        //User videos datas in database
         const videos = await databases.listDocuments(
             databaseId,
             videoCollectionId,
             [Query.equal('creator', userId)]
         )
 
-        if(!videos) throw new Error('Videos not found')
+        //Delete Files
+        let filesUser = <string[]>[];
 
-        videos.documents.forEach(el => {
-            databases.deleteDocument(
-                databaseId,
-                videoCollectionId,
-                el.$id
-            )
-        })
+        const documentsVideos = videos.documents;
 
-        const user = await databases.deleteDocument(
-            databaseId,
-            userCollectionId,
-            userId
-        )
+        documentsVideos.forEach(doc => {
+            const videoFilter1 = doc.video.split('https://cloud.appwrite.io/v1/storage/buckets/66608f7900002b723fbe/files/');
+            const videoFilter2 = videoFilter1[1].split('/view?project=66607c8f002753f3a1a8');
+            const idVideo = videoFilter2[0];
 
-        if(!user) throw new Error('User not found')
+            const thumbFilter1 = doc.thumbnail.split('https://cloud.appwrite.io/v1/storage/buckets/66608f7900002b723fbe/files/');
+            const thumbFilter2 = thumbFilter1[1].split('/preview?width=2000&height=2000&gravity=top&quality=100&project=66607c8f002753f3a1a8');
+            const idThumbnail = thumbFilter2[0]
+            filesUser.push(idVideo, idThumbnail);
+        })       
 
-        await account.deleteIdentity(accountId);
+        for(const fileId of filesUser) {
+            await storage.deleteFile(storageId, fileId)
+        }
 
-        return user
+        //Delete Videos
+        if(videos && videos.documents) {
+            videos.documents.forEach(el => {
+                databases.deleteDocument(
+                    databaseId,
+                    videoCollectionId,
+                    el["$id"]
+                )
+            })
+        }
+
+        return videos;
     }
     catch(error) {
-        throw new Error(`Error Delete Video : ${error}`)
+        console.log('Error Delete Activities : ', error);
+        throw new Error(`Error Delete Activities : ${error}`)
     }
 }
 
 export async function deleteFile(fileId: string) {}
 
-export async function editRole(userId: string, datas: UserType) {
+export async function verifPasswordAndEditUser(userId: string, datas: UserType, oldPassword: string) {
     try {
+        await editUser(userId, datas, oldPassword);
+    }
+    catch(error) {
+        //console.log('Error Verif Password And Edit User : ', error);
+        throw new Error(`Error Verif Password And Edit User : ${error}`)
+    }
+}
+
+export async function editUser(userId: string, datas: UserType, oldPassword?: string) {
+    try {
+        console.log("userId : ", userId);
+        console.log("oldPassword : ", oldPassword);
+        console.log("datas : ", datas);
+        
+        await account.updateName(datas.username);
+        
+        if(oldPassword) {
+            await account.updateEmail(datas.email, oldPassword);
+            await account.updatePassword(datas.password!, oldPassword);
+        } else {
+            await account.updateEmail(datas.email, datas.password!);
+        }
+
+        
+
         const updatedUser = await databases.updateDocument(
             databaseId,
             userCollectionId,
@@ -411,7 +486,8 @@ export async function editRole(userId: string, datas: UserType) {
         return  updatedUser;
     }
     catch(error) {
-        throw new Error(`Error Get Favorite : ${error}`)
+        //console.log('Error Edit User : ', error);
+        throw new Error(`Error Edit User : ${error}`)
     }
 }
 
@@ -430,12 +506,14 @@ export async function updateUser(userId: string, datas: UserType, oldPassword: s
         return  updatedUser;
     }
     catch(error) {
-        throw new Error(`Error Get Favorite : ${error}`)
+        console.log('Error Update User : ', error);
+        throw new Error(`Error Update User : ${error}`)
     }
 }
 
 export async function getInfosUser(userId: string) {
     const user = await getUser(userId);
+    console.log('user : ', user)
     
     try {
         const videos = await databases.listDocuments(
@@ -449,6 +527,7 @@ export async function getInfosUser(userId: string) {
         return user;
     }
     catch(error) {
-        throw new Error(`Error Get Favorite : ${error}`)
+        //console.log('Error Get Infos User : ', error);
+        throw new Error(`Error Get Infos User : ${error}`)
     }
 }

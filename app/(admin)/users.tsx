@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from "react
 import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppwrite } from "../../hooks/useAppwrite";
-import { getAllUsers, deleteUser } from "../../lib/appwrite";
+import { getAllUsers } from "../../lib/appwrite";
 import { colors, icons } from "../../constants";
 import { Context } from "../../context/GlobalProvider";
 import { router } from "expo-router";
@@ -11,12 +11,16 @@ export default function users() {
   const { user } = useContext(Context)!;
   const { data: listUsers, refetch } = useAppwrite(getAllUsers());
   const [modal, setModal] = useState(false);
-  console.log('list : ', listUsers)
+
   useEffect(() => {
     if(user.role !== "admin") {
       router.replace("/home")
     }
   }, [])
+
+  useEffect(() => {
+    refetch();
+  }, [listUsers.length])
 
   return (
     <SafeAreaView style={mainStyles.main}>
@@ -47,17 +51,6 @@ export default function users() {
               <Text style={itemStyles.username}>{item.username}</Text>
             </TouchableOpacity>
             <View style={itemStyles.actions}>
-              {
-                user["$id"] === item["$id"] && (
-                  <TouchableOpacity onPress={() => router.push(`/users/edit/${item["$id"]}`)}>
-                    <Image 
-                      source={icons.edit}
-                      resizeMode="contain"
-                      style={itemStyles.iconEdit}
-                      />
-                  </TouchableOpacity>
-                )
-              }
               <TouchableOpacity onPress={() => router.push(`/users/delete/${item["$id"]}`)}>
                 <Image 
                   source={icons.basket}

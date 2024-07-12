@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../../constants";
 import { useAppwrite } from "../../../hooks/useAppwrite";
-import { deleteUser, getUser } from "../../../lib/appwrite";
+import { deleteActivities, getUser } from "../../../lib/appwrite";
 import { useLocalSearchParams, router, Link } from "expo-router";
 import { Context } from "../../../context/GlobalProvider";
 
@@ -28,20 +28,23 @@ export default function Delete() {
           (
             <>
               <View style={styles.header}>
-                <Text style={styles.title}>Delete user ?</Text>
+                <Text style={styles.title}>Delete activities user ?</Text>
                 <Text style={styles.username}>{detailsUser[0].username}</Text>
               </View>
               <View style={styles.buttons}>
-                <TouchableOpacity onPress={() => router.push("/users")} style={styles.button}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.button}>
                     <Text style={styles.cancelText}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => deleteUser(id!, detailsUser[0].accountId)} style={styles.button}>
+                <TouchableOpacity onPress={() => {
+                  deleteActivities(id!, detailsUser[0].accountId);
+                  router.replace("/users");
+                }} style={styles.button}>
                     <Text style={styles.confirmText}>Confirm</Text>
                 </TouchableOpacity>
               </View>
-              <Text style={styles.infos}>If you delete user, you also delete all his posts</Text>
+              <Text style={styles.infos}>Delete posts, files and sessions</Text>
               <View style={styles.back}>
-                <Text style={styles.backText}>Return to the </Text>
+                <Text style={styles.backText}>Go to the </Text>
                 <Link href="/users" style={styles.backLink}>List users</Link>
               </View>
             </>

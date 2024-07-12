@@ -12,7 +12,7 @@ import { router } from "expo-router";
 
 export default function Profile() {
   const { user, setUser, setIsLoggedIn } = useContext(Context)!;
-  const { data: listPosts, refetch } = useAppwrite(getUserPosts(user?.$id));
+  const { data: listPosts, refetch } = useAppwrite(getUserPosts(user["$id"]));
 
   const logout = async () => {
     try{ 
@@ -29,7 +29,7 @@ export default function Profile() {
       <FlatList 
         style={styles.list}
         data={listPosts}
-        keyExtractor={(item) => item.$id}
+        keyExtractor={(item) => item["$id"]}
         renderItem={({item}) => (
             <VideoCard 
             video={item}
@@ -39,6 +39,13 @@ export default function Profile() {
         ListHeaderComponent={() => (
           <View style={styles.header}>
             <View style={styles.dashAndLogout}>
+              <TouchableOpacity onPress={() => router.push(`/users/account/${user["$id"]}`)}>
+                <Image 
+                  source={icons.account}
+                  resizeMode="contain"
+                  style={styles.dashboard}
+                />
+              </TouchableOpacity>
               {
                 user.role === "admin"
                 && (
