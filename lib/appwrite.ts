@@ -3,13 +3,13 @@ import { Client, Account, Avatars, Databases, ID, Query, Storage, ImageGravity }
 import { ImagePickerAsset } from "expo-image-picker";
 
 export const appwriteConfig = {
-    endpoint: 'https://cloud.appwrite.io/v1',
-    platform: 'com.zentech.aora',
-    projectId: '66607c8f002753f3a1a8',
-    databaseId: '66608c9700326b63f61f',
-    userCollectionId: '66608cc8003b0ab91113',
-    videoCollectionId: '66608d0e00169a12a184',
-    storageId: '66608f7900002b723fbe',
+    endpoint: '',
+    platform: '',
+    projectId: '',
+    databaseId: '',
+    userCollectionId: '',
+    videoCollectionId: '',
+    storageId: '',
 
 }
 
@@ -414,12 +414,12 @@ export async function deleteActivities(userId: string, accountId: string) {
         const documentsVideos = videos.documents;
 
         documentsVideos.forEach(doc => {
-            const videoFilter1 = doc.video.split('https://cloud.appwrite.io/v1/storage/buckets/66608f7900002b723fbe/files/');
+            const videoFilter1 = doc.video.split('https://cloud.appwrite.io/v1/storage/buckets//files/');
             const videoFilter2 = videoFilter1[1].split('/view?project=66607c8f002753f3a1a8');
             const idVideo = videoFilter2[0];
 
-            const thumbFilter1 = doc.thumbnail.split('https://cloud.appwrite.io/v1/storage/buckets/66608f7900002b723fbe/files/');
-            const thumbFilter2 = thumbFilter1[1].split('/preview?width=2000&height=2000&gravity=top&quality=100&project=66607c8f002753f3a1a8');
+            const thumbFilter1 = doc.thumbnail.split('https://cloud.appwrite.io/v1/storage/buckets//files/');
+            const thumbFilter2 = thumbFilter1[1].split('/preview?width=2000&height=2000&gravity=top&quality=100&project=');
             const idThumbnail = thumbFilter2[0]
             filesUser.push(idVideo, idThumbnail);
         })       
